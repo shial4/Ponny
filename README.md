@@ -1,5 +1,26 @@
 # Pony
 
+## Current-item pool reliability
+
+Pony now resolves completed items from the **current League client store dataset first**, rather than requiring Data Dragon's map flag on every record.
+
+```text
+CommunityDragon latest items
+→ inStore = true
+→ displayInItemSets = true
+→ completed item (`to` empty)
+→ standard current item id
+→ 2300–4000 total gold
+→ no champion-specific / deprecated / boots / consumables
+→ reject when Riot explicitly marks Summoner's Rift unavailable
+```
+
+Data Dragon is merged back in for canonical stats and artwork.
+
+If current-client item data cannot be loaded, Pony falls back to Data Dragon, then to a small local safe item set instead of failing with zero build paths.
+
+The analysis error card provides **Try again** and **Change champion** without requiring a page refresh.
+
 ## Champion-first UX
 
 Pony deliberately does **not** calculate a champion on first page load.
