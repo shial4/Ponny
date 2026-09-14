@@ -1,0 +1,17 @@
+{
+  "name": "Pony",
+  "short_name": "Pony",
+  "description": "League of Legends OTP rune and item path optimiser.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#07090d",
+  "theme_color": "#07090d",
+  "icons": [
+    {
+      "src": "./assets/pony.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": 2,
+  "generated": false,
+  "fetched_at": null,
+  "riot": {
+    "ddragon_version": null,
+    "source": "https://ddragon.leagueoflegends.com/api/versions.json"
+  },
+  "communitydragon": {
+    "channel": "latest",
+    "source": "https://raw.communitydragon.org/latest/"
+  },
+  "note": "This placeholder is replaced by scripts/fetch-latest-data.py during GitHub Pages deployment."
+}
