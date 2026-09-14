@@ -1,7 +1,7 @@
 {
-  "name": "Pony",
+  "name": "Pony \u2014 League OTP Optimiser",
   "short_name": "Pony",
-  "description": "League of Legends OTP rune and item path optimiser.",
+  "description": "Ranked Solo/Duo League of Legends rune and item path optimiser.",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#07090d",

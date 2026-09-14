@@ -1,114 +1,106 @@
-# Important: first GitHub Pages deployment
-
-Before the first workflow can publish, open:
-
-**Repository → Settings → Pages → Build and deployment → Source → GitHub Actions**
-
-GitHub's Pages deployment action requires Pages to already be enabled/configured for the repository. If Pages is disabled, `actions/deploy-pages` can fail with a 404/Not Found style deployment error.
-
-If the repository is private, your GitHub plan must also support Pages for private repositories.
-
-The workflow intentionally treats Riot/CommunityDragon refresh errors as warnings so an upstream outage cannot prevent Pony itself from deploying.
-
----
-
 # Pony
 
-**Pony** is a static League of Legends OTP build optimiser.
+Pony is a League of Legends OTP build optimiser focused on **Ranked Solo/Duo only**.
 
-It is deliberately **patch-dynamic**: the GitHub Pages deployment refreshes League data every six hours, and the browser independently checks Riot's latest Data Dragon version when a user opens the site.
+## Current product rules
 
-## Dynamic data strategy
+Pony treats these as invariants:
 
-Pony uses two layers:
+- Queue is always **Ranked Solo/Duo (`queueId = 420`)**
+- Summoner's Rift only
+- Current purchasable items only
+- No Arena / ARAM / mode-specific / legacy / removed item candidates
+- Champion + role determine rune candidates
+- Unfiltered cross-queue empirical rune priors are not used
+- Current Riot Data Dragon version is resolved dynamically at runtime
+- CommunityDragon `latest` may supplement current client mechanics/static data
+- Build order matters; impossible or nonsensical orderings are penalised/removed
 
-### 1. Riot Data Dragon — canonical official static data
+Ekko has the most detailed exact quick-exit model:
 
-At deploy time and at runtime Pony resolves:
+```text
+Q1 → E2 → AA → Passive → leave → Q2
+```
+
+## UX improvements in this package
+
+The page no longer looks dead while calculations run.
+
+Pony now shows a full loading/analysis overlay with states such as:
+
+```text
+Loading current League data
+Resolving current patch and Summoner's Rift data…
+
+Analysing Ekko
+Ranked Solo/Duo · queue 420 · evaluating runes and valid 1 → 2 → 3 item paths…
+```
+
+The same loader appears when changing champion/settings that trigger a heavy recalculation.
+
+## Ekko safeguards
+
+The Ekko path simulator now:
+
+- applies Rabadon's AP multiplier
+- models Shadowflame low-HP amplification
+- models Stormsurge delayed damage
+- models Lich Bane burst
+- models Nashor's on-hit contribution
+- models Void/magic penetration
+- rejects Rabadon/Void/Zhonya first-item paths
+- favours realistic first-item assassin purchases
+- weights build sequence instead of only final completed stats
+- excludes invalid map/mode items
+
+This is intended to prevent nonsense recommendations such as:
+
+```text
+Hextech Gunblade → Crown of the Shattered Queen → Cruelty
+```
+
+or:
+
+```text
+Rabadon's → Void Staff → Shadowflame
+```
+
+as default Ekko Jungle builds.
+
+## Dynamic data
+
+At startup Pony resolves:
 
 ```text
 https://ddragon.leagueoflegends.com/api/versions.json
 ```
 
-and loads the newest published:
+and loads the newest available Riot Data Dragon static data.
 
-- champions
-- items
-- rune trees
-- summoner spells
-- champion / item / rune images
-
-No version is hard-coded.
-
-Riot documents that Data Dragon is manually published and may not update immediately with a League patch.
-
-### 2. CommunityDragon `latest` — current-client freshness supplement
-
-Pony also reads the rolling current-client data under:
+It also uses CommunityDragon `latest` for current-client information where appropriate:
 
 ```text
 https://raw.communitydragon.org/latest/
 ```
 
-including:
+No Riot developer API key is embedded in the browser.
 
-- champion summary
-- item client data
-- perks
-- perk styles
-- champion rune recommendations
-- champion/perk style mapping
-- selected champion detail
+## Empirical ranked data
 
-This layer is used to:
+Any future population/build statistics must be explicitly scoped to:
 
-- enrich ability/mechanics signals;
-- overlay current client item descriptions, prices and parseable stats;
-- give rune scoring a current League-client recommendation prior;
-- detect data newer than the currently published Data Dragon bundle.
-
-The UI shows the active Riot Data Dragon version and snapshot refresh time instead of pretending the two sources are always on the same patch.
-
-## Automatic refresh
-
-`.github/workflows/pages.yml` runs:
-
-- on every push to `main` or `master`;
-- manually through `workflow_dispatch`;
-- every six hours via GitHub Actions schedule.
-
-The deployment executes:
-
-```bash
-python scripts/fetch-latest-data.py
+```text
+queueId = 420
 ```
 
-which creates a static snapshot under `data/`.
+Pony currently does **not** treat unfiltered CommunityDragon recommended rune pages as SoloQ population evidence.
 
-This means Pony continues to work if a client temporarily cannot reach Riot/CommunityDragon.
+For true SoloQ win-rate / pick-rate / sample-size priors, use a backend or dataset that can guarantee queue 420 and current-patch filtering.
 
-The browser still performs its own no-cache version check and can move to a newer Riot Data Dragon version before the next scheduled deployment.
-
-## Why not put a Riot API key in the static site?
-
-Never put a Riot developer key in browser JavaScript or a public GitHub repository.
-
-Pony's current static-data use case does **not** need an API key. Data Dragon is public.
-
-If Pony later adds:
-
-- Riot ID lookup
-- match history
-- summoner ranked data
-- personal OTP performance
-
-those authenticated Riot API requests should go through a backend/serverless function with the key stored as a secret.
-
-## Local development
-
-Serve the repository root:
+## Run locally
 
 ```bash
+python scripts/validate-project.py
 python3 -m http.server 8080
 ```
 
@@ -118,33 +110,51 @@ Open:
 http://localhost:8080
 ```
 
-To build the same data snapshot as production:
+## GitHub Pages
 
-```bash
-python scripts/fetch-latest-data.py
+This repository should be published directly from the branch.
+
+In GitHub:
+
+**Settings → Pages**
+
+Set:
+
+```text
+Source: Deploy from a branch
+Branch: master
+Folder: / (root)
 ```
 
-Internet access is required for the refresh script.
+Use `main` instead if you change your default branch.
 
-## Deploy
+There should be **no custom GitHub Pages deploy workflow**.
 
-1. Push the repository to GitHub.
-2. Open **Settings → Pages**.
-3. Choose **GitHub Actions** as the Pages source.
+`.github/workflows/validate.yml` only validates the project.
 
-The included workflow handles refresh + deployment.
+## Push this package over the existing repo
 
-## Data freshness / accuracy
+From the repository root:
 
-There are two different concepts:
+```bash
+# replace the repository contents with this package
 
-**Data freshness** is automatic and dynamic.
+git add -A
+git commit -m "Fix Pony SoloQ optimiser and loading UX"
+git push
+```
 
-**Champion combat modelling** is separate.
+`git add -A` is important because it also stages deletion of obsolete workflow/files.
 
-Ekko currently has an explicit quick-exit combat adapter. Other champions use an adaptive mechanics model built from champion/role/objective signals. A current item/rune feed does not magically make an approximate champion combo model frame-perfect.
+## Expected site
 
-The long-term path is a champion mechanics DSL that models spell events, passives, resets, executes, shields/heals, forms, pets, multi-hit rules and on-hit application exactly.
+For the current repository:
+
+```text
+https://shial4.github.io/Ponny/
+```
+
+GitHub Pages branch publishing may take a minute or two after the commit.
 
 ## Disclaimer
 

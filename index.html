@@ -14,7 +14,7 @@
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 60% -12%,rgba(30,112,114,.22),transparent 34rem),radial-gradient(circle at 8% 0,rgba(42,87,145,.14),transparent 31rem),var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 .app{width:min(1580px,calc(100% - 24px));margin:auto;padding:25px 0 60px}.panel{background:rgba(13,18,25,.94);border:1px solid var(--line);border-radius:16px;box-shadow:0 16px 60px rgba(0,0,0,.17)}
 header{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:13px}h1{font-size:clamp(40px,5.7vw,68px);line-height:.92;letter-spacing:-.055em;margin:6px 0 9px}h2,h3{margin:0;letter-spacing:-.028em}.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:9px;font-weight:900;color:#6683a4}.muted{color:var(--muted)}.status{border:1px solid #29425e;background:#0b1119;border-radius:999px;padding:8px 11px;font-size:10px;color:#90c0ee;white-space:nowrap}
-.top{display:grid;grid-template-columns:auto minmax(220px,1fr) repeat(3,minmax(140px,220px));gap:12px;align-items:center;padding:12px 14px;margin-bottom:11px}.portrait{width:72px;height:72px;border-radius:14px;object-fit:cover;border:1px solid #38495e;background:#111a25}.portraitFallback{width:72px;height:72px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(145deg,#193451,#171621);border:1px solid #38495e;font-size:22px;font-weight:900;color:#b9dcff}.nameRow{display:flex;gap:8px;align-items:center}.nameRow h2{font-size:26px}.badge{font-size:8px;padding:4px 7px;border-radius:999px;text-transform:uppercase;letter-spacing:.08em;font-weight:900}.exact{color:#77daa7;border:1px solid rgba(80,205,140,.26);background:rgba(53,162,108,.1)}.adaptive{color:#e3bc73;border:1px solid rgba(220,170,70,.26);background:rgba(186,127,30,.1)}
+.top{display:grid;grid-template-columns:auto minmax(220px,1fr) repeat(4,minmax(140px,220px));gap:12px;align-items:center;padding:12px 14px;margin-bottom:11px}.portrait{width:72px;height:72px;border-radius:14px;object-fit:cover;border:1px solid #38495e;background:#111a25}.portraitFallback{width:72px;height:72px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(145deg,#193451,#171621);border:1px solid #38495e;font-size:22px;font-weight:900;color:#b9dcff}.nameRow{display:flex;gap:8px;align-items:center}.nameRow h2{font-size:26px}.badge{font-size:8px;padding:4px 7px;border-radius:999px;text-transform:uppercase;letter-spacing:.08em;font-weight:900}.exact{color:#77daa7;border:1px solid rgba(80,205,140,.26);background:rgba(53,162,108,.1)}.adaptive{color:#e3bc73;border:1px solid rgba(220,170,70,.26);background:rgba(186,127,30,.1)}
 label{display:block;color:#8292a8;font-size:9px;font-weight:850;margin-bottom:5px}select,input{width:100%;min-height:39px;border:1px solid #2a3748;border-radius:9px;background:#090e15;color:#eaf1fa;padding:8px 9px;outline:0}select:focus,input:focus{border-color:#548fcf;box-shadow:0 0 0 3px rgba(84,143,207,.1)}
 .hero{overflow:hidden;margin-bottom:11px}.heroHead{display:flex;justify-content:space-between;align-items:flex-end;padding:16px 17px 10px;border-bottom:1px solid #1d2734}.score{text-align:right}.score small{display:block;color:#708197;font-size:8px;text-transform:uppercase;letter-spacing:.1em}.score strong{font-size:32px;color:#82c5ff}.heroGrid{display:grid;grid-template-columns:1fr 1.7fr}.runePane,.itemPane{padding:15px 17px}.runePane{border-right:1px solid #1d2734}.paneHead{display:flex;justify-content:space-between;gap:10px;margin-bottom:13px}.paneHead span{font-size:9px;color:#718197;text-transform:uppercase;letter-spacing:.1em;font-weight:900}.paneHead strong{font-size:11px;color:#b9c6d7}
 .runePage{display:flex;gap:7px;align-items:flex-start;flex-wrap:wrap}.runeBox{text-align:center}.runeIcon{width:40px;height:40px;object-fit:cover;border-radius:50%;border:1px solid #354359;background:#0a0e14}.runeIcon.key{width:54px;height:54px}.runeLabel{font-size:7px;color:#718298;line-height:1.1;margin-top:4px;max-width:68px}.divider{width:1px;height:50px;background:#273244;margin:2px 5px}.itemPath{display:flex;gap:8px;align-items:flex-start;overflow:auto}.itemBox{width:100px;flex:0 0 100px;text-align:center}.itemIcon{width:66px;height:66px;margin:auto;object-fit:cover;border-radius:8px;border:1px solid #37465a;background:#0a0e14}.itemName{font-size:9px;line-height:1.15;color:#aab7c7;margin-top:6px;min-height:22px}.itemGold{font-size:8px;color:#687a90}.arrow{padding-top:23px;color:#536278;font-size:18px}
@@ -26,12 +26,23 @@ label{display:block;color:#8292a8;font-size:9px;font-weight:850;margin-bottom:5p
 .miniRunes{display:flex;gap:3px;align-items:center;min-width:180px}.miniRune{width:27px;height:27px;border-radius:50%;object-fit:cover;border:1px solid #334156;background:#0a0e14}.miniRune.key{width:33px;height:33px}.miniItems{display:flex;gap:4px;align-items:center}.miniItem{width:31px;height:31px;border-radius:5px;object-fit:cover;border:1px solid #334156;background:#0a0e14}.treeText{font-size:8px;color:#728399;margin-left:4px}.rankN{font-size:8px;color:#66788e;margin-left:3px}
 .model{margin-top:11px;padding:14px;display:grid;grid-template-columns:auto 1fr;gap:10px 20px;align-items:center}.model code{background:#080c12;border:1px solid #202b39;border-radius:8px;padding:9px 11px;color:#8fc4f5;overflow:auto}.model p{grid-column:1/-1;margin:0;font-size:10px;color:#78889b}.warning{color:#d5ab68}
 footer{display:flex;justify-content:space-between;gap:12px;padding:12px 2px 0;color:#536175;font-size:8px}
+.loaderOverlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(5,8,12,.96);backdrop-filter:blur(14px);transition:opacity .25s ease,visibility .25s ease}.loaderOverlay.hidden{opacity:0;visibility:hidden;pointer-events:none}.loaderCard{width:min(440px,calc(100% - 32px));padding:26px;border:1px solid #263447;border-radius:20px;background:linear-gradient(180deg,rgba(18,25,35,.98),rgba(10,15,22,.98));box-shadow:0 30px 100px rgba(0,0,0,.45)}.loaderBrand{display:flex;align-items:center;gap:12px;margin-bottom:22px}.loaderBrand img{width:46px;height:46px;border-radius:12px}.loaderBrand strong{font-size:24px;letter-spacing:-.04em}.loaderSpinner{width:28px;height:28px;border:3px solid #243246;border-top-color:#77bdff;border-radius:50%;animation:ponyspin .8s linear infinite;margin-bottom:18px}.loaderTitle{font-size:18px;font-weight:850;letter-spacing:-.02em}.loaderDetail{margin-top:6px;color:#7f90a6;font-size:11px;min-height:34px}.loaderTrack{height:4px;margin-top:20px;background:#17202c;border-radius:99px;overflow:hidden}.loaderBar{height:100%;width:8%;border-radius:99px;background:linear-gradient(90deg,#70b9ff,#74d6a4);transition:width .25s ease}.loaderError{display:none;margin-top:14px;color:#efa0ad;font-size:10px}.loaderOverlay.error .loaderError{display:block}.app.is-busy{filter:saturate(.75)}@keyframes ponyspin{to{transform:rotate(360deg)}}
 @media(max-width:1200px){.top{grid-template-columns:auto 1fr 1fr 1fr}.controlGrid{grid-template-columns:repeat(3,1fr)}.heroGrid{grid-template-columns:1fr}.runePane{border-right:0;border-bottom:1px solid #1d2734}}
 @media(max-width:720px){.app{width:calc(100% - 14px)}header{flex-direction:column;align-items:flex-start}.top{grid-template-columns:1fr}.controlGrid{grid-template-columns:1fr 1fr}.spikes{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
-<div class="app">
+<div class="loaderOverlay" id="loaderOverlay" aria-live="polite" aria-busy="true">
+ <div class="loaderCard">
+  <div class="loaderBrand"><img src="./assets/pony.svg" alt=""><strong>Pony</strong></div>
+  <div class="loaderSpinner"></div>
+  <div class="loaderTitle" id="loaderTitle">Loading current League data</div>
+  <div class="loaderDetail" id="loaderDetail">Resolving the newest Riot patch and valid Summoner’s Rift data…</div>
+  <div class="loaderTrack"><div class="loaderBar" id="loaderBar"></div></div>
+  <div class="loaderError" id="loaderError">Something went wrong. Refresh the page to retry.</div>
+ </div>
+</div>
+<div class="app is-busy" id="appRoot">
 <header>
  <div><div class="eyebrow">League OTP optimiser</div><div style="display:flex;align-items:center;gap:12px"><img src="./assets/pony.svg" alt="" width="44" height="44" style="border-radius:12px"><h1 style="margin-right:0">Pony</h1></div><p class="muted">Find the mathematically strongest rune and 1 → 2 → 3 item path for your champion, role and playstyle.</p></div>
  <div class="status" id="status">Loading Riot Data Dragon…</div>
@@ -42,6 +53,7 @@ footer{display:flex;justify-content:space-between;gap:12px;padding:12px 2px 0;co
  <div><div class="nameRow"><h2 id="champName">Ekko</h2><span id="confidence" class="badge exact">Exact Ekko</span></div><div id="champMeta" class="muted" style="font-size:10px;margin-top:4px">Assassin · Mage</div></div>
  <div><label>Champion</label><select id="champion"></select></div>
  <div><label>Role</label><select id="role"><option>Jungle</option><option>Mid</option><option>Top</option><option>ADC</option><option>Support</option></select></div>
+ <div><label>Queue</label><select id="queue" disabled><option selected>Ranked Solo/Duo · 420</option></select></div>
  <div><label>Objective</label><select id="goal"><option value="auto">Auto for champion</option><option value="burst">Burst / one-shot</option><option value="trade">Quick trade</option><option value="extended">Extended fight</option><option value="durability">Durability / frontline</option><option value="poke">Poke</option></select></div>
 </section>
 
@@ -79,7 +91,7 @@ footer{display:flex;justify-content:space-between;gap:12px;padding:12px 2px 0;co
 <section id="note" class="panel note"></section>
 
 <section class="panel tablePanel">
- <div class="tableHead"><div><div class="eyebrow">Full path ranking</div><h2>Runes + Item 1 → Item 2 → Item 3</h2></div><p class="muted">Every loaded rune is scored first; every loaded completed item is scored first. Top candidates then enter the full combinatorial simulation.</p></div>
+ <div class="tableHead"><div><div class="eyebrow">Full path ranking</div><h2>Runes + Item 1 → Item 2 → Item 3</h2></div><p class="muted">Queue is fixed to Ranked Solo/Duo (420). Current Summoner’s Rift items only; unfiltered cross-queue recommendation priors are never used.</p></div>
  <div class="wrap"><table><thead><tr>
   <th class="left">#</th><th class="left">Rune page</th><th class="sort" data-sort="runeFit">Rune fit</th>
   <th class="left">1st item</th><th class="sort" data-sort="stage1">1-item perf</th>
@@ -90,13 +102,14 @@ footer{display:flex;justify-content:space-between;gap:12px;padding:12px 2px 0;co
 </section>
 
 <section class="panel model"><div><div class="eyebrow">Model</div><h2 id="modelTitle">Ekko · exact quick-exit model</h2></div><code id="combo">Q1 → E2 → AA → Passive → leave → Q2</code><p id="modelNotes"></p></section>
-<footer><span id="riotVersion">Riot Data Dragon resolving…</span><span>Riot Games does not endorse this project.</span></footer>
+<footer><span id="riotVersion">Riot Data Dragon resolving…</span><span>Ranked Solo/Duo only · queueId 420 · Riot Games does not endorse this project.</span></footer>
 </div>
 
 <script>
 "use strict";
 const FALLBACK = [{"id": "Aatrox", "name": "Aatrox", "tags": ["Fighter"]}, {"id": "Ahri", "name": "Ahri", "tags": ["Mage"]}, {"id": "Akali", "name": "Akali", "tags": ["Assassin"]}, {"id": "Akshan", "name": "Akshan", "tags": ["Marksman"]}, {"id": "Alistar", "name": "Alistar", "tags": ["Tank"]}, {"id": "Ambessa", "name": "Ambessa", "tags": ["Fighter"]}, {"id": "Amumu", "name": "Amumu", "tags": ["Tank"]}, {"id": "Anivia", "name": "Anivia", "tags": ["Mage"]}, {"id": "Annie", "name": "Annie", "tags": ["Mage"]}, {"id": "Aphelios", "name": "Aphelios", "tags": ["Marksman"]}, {"id": "Ashe", "name": "Ashe", "tags": ["Marksman"]}, {"id": "AurelionSol", "name": "AurelionSol", "tags": ["Mage"]}, {"id": "Aurora", "name": "Aurora", "tags": ["Mage"]}, {"id": "Azir", "name": "Azir", "tags": ["Mage"]}, {"id": "Bard", "name": "Bard", "tags": ["Support"]}, {"id": "Belveth", "name": "Belveth", "tags": ["Fighter"]}, {"id": "Blitzcrank", "name": "Blitzcrank", "tags": ["Tank"]}, {"id": "Brand", "name": "Brand", "tags": ["Mage"]}, {"id": "Braum", "name": "Braum", "tags": ["Tank"]}, {"id": "Briar", "name": "Briar", "tags": ["Fighter"]}, {"id": "Caitlyn", "name": "Caitlyn", "tags": ["Marksman"]}, {"id": "Camille", "name": "Camille", "tags": ["Fighter"]}, {"id": "Cassiopeia", "name": "Cassiopeia", "tags": ["Mage"]}, {"id": "Chogath", "name": "Chogath", "tags": ["Tank"]}, {"id": "Corki", "name": "Corki", "tags": ["Marksman"]}, {"id": "Darius", "name": "Darius", "tags": ["Fighter"]}, {"id": "Diana", "name": "Diana", "tags": ["Assassin"]}, {"id": "DrMundo", "name": "DrMundo", "tags": ["Tank"]}, {"id": "Draven", "name": "Draven", "tags": ["Marksman"]}, {"id": "Ekko", "name": "Ekko", "tags": ["Assassin"]}, {"id": "Elise", "name": "Elise", "tags": ["Mage"]}, {"id": "Evelynn", "name": "Evelynn", "tags": ["Assassin"]}, {"id": "Ezreal", "name": "Ezreal", "tags": ["Marksman"]}, {"id": "Fiddlesticks", "name": "Fiddlesticks", "tags": ["Mage"]}, {"id": "Fiora", "name": "Fiora", "tags": ["Fighter"]}, {"id": "Fizz", "name": "Fizz", "tags": ["Assassin"]}, {"id": "Galio", "name": "Galio", "tags": ["Tank"]}, {"id": "Gangplank", "name": "Gangplank", "tags": ["Fighter"]}, {"id": "Garen", "name": "Garen", "tags": ["Fighter"]}, {"id": "Gnar", "name": "Gnar", "tags": ["Fighter"]}, {"id": "Gragas", "name": "Gragas", "tags": ["Fighter"]}, {"id": "Graves", "name": "Graves", "tags": ["Marksman"]}, {"id": "Gwen", "name": "Gwen", "tags": ["Fighter"]}, {"id": "Hecarim", "name": "Hecarim", "tags": ["Fighter"]}, {"id": "Heimerdinger", "name": "Heimerdinger", "tags": ["Mage"]}, {"id": "Hwei", "name": "Hwei", "tags": ["Mage"]}, {"id": "Illaoi", "name": "Illaoi", "tags": ["Fighter"]}, {"id": "Irelia", "name": "Irelia", "tags": ["Fighter"]}, {"id": "Ivern", "name": "Ivern", "tags": ["Support"]}, {"id": "Janna", "name": "Janna", "tags": ["Support"]}, {"id": "JarvanIV", "name": "JarvanIV", "tags": ["Tank"]}, {"id": "Jax", "name": "Jax", "tags": ["Fighter"]}, {"id": "Jayce", "name": "Jayce", "tags": ["Fighter"]}, {"id": "Jhin", "name": "Jhin", "tags": ["Marksman"]}, {"id": "Jinx", "name": "Jinx", "tags": ["Marksman"]}, {"id": "KSante", "name": "KSante", "tags": ["Tank"]}, {"id": "Kaisa", "name": "Kaisa", "tags": ["Marksman"]}, {"id": "Kalista", "name": "Kalista", "tags": ["Marksman"]}, {"id": "Karma", "name": "Karma", "tags": ["Mage"]}, {"id": "Karthus", "name": "Karthus", "tags": ["Mage"]}, {"id": "Kassadin", "name": "Kassadin", "tags": ["Assassin"]}, {"id": "Katarina", "name": "Katarina", "tags": ["Assassin"]}, {"id": "Kayle", "name": "Kayle", "tags": ["Fighter"]}, {"id": "Kayn", "name": "Kayn", "tags": ["Fighter"]}, {"id": "Kennen", "name": "Kennen", "tags": ["Mage"]}, {"id": "Khazix", "name": "Khazix", "tags": ["Assassin"]}, {"id": "Kindred", "name": "Kindred", "tags": ["Marksman"]}, {"id": "Kled", "name": "Kled", "tags": ["Fighter"]}, {"id": "KogMaw", "name": "KogMaw", "tags": ["Marksman"]}, {"id": "Leblanc", "name": "Leblanc", "tags": ["Assassin"]}, {"id": "LeeSin", "name": "LeeSin", "tags": ["Fighter"]}, {"id": "Leona", "name": "Leona", "tags": ["Tank"]}, {"id": "Lillia", "name": "Lillia", "tags": ["Fighter"]}, {"id": "Lissandra", "name": "Lissandra", "tags": ["Mage"]}, {"id": "Lucian", "name": "Lucian", "tags": ["Marksman"]}, {"id": "Lulu", "name": "Lulu", "tags": ["Support"]}, {"id": "Lux", "name": "Lux", "tags": ["Mage"]}, {"id": "Malphite", "name": "Malphite", "tags": ["Tank"]}, {"id": "Malzahar", "name": "Malzahar", "tags": ["Mage"]}, {"id": "Maokai", "name": "Maokai", "tags": ["Tank"]}, {"id": "MasterYi", "name": "MasterYi", "tags": ["Assassin"]}, {"id": "Mel", "name": "Mel", "tags": ["Mage"]}, {"id": "Milio", "name": "Milio", "tags": ["Support"]}, {"id": "MissFortune", "name": "MissFortune", "tags": ["Marksman"]}, {"id": "Mordekaiser", "name": "Mordekaiser", "tags": ["Fighter"]}, {"id": "Morgana", "name": "Morgana", "tags": ["Mage"]}, {"id": "Naafiri", "name": "Naafiri", "tags": ["Assassin"]}, {"id": "Nami", "name": "Nami", "tags": ["Support"]}, {"id": "Nasus", "name": "Nasus", "tags": ["Fighter"]}, {"id": "Nautilus", "name": "Nautilus", "tags": ["Tank"]}, {"id": "Neeko", "name": "Neeko", "tags": ["Mage"]}, {"id": "Nidalee", "name": "Nidalee", "tags": ["Assassin"]}, {"id": "Nilah", "name": "Nilah", "tags": ["Fighter"]}, {"id": "Nocturne", "name": "Nocturne", "tags": ["Assassin"]}, {"id": "Nunu", "name": "Nunu", "tags": ["Tank"]}, {"id": "Olaf", "name": "Olaf", "tags": ["Fighter"]}, {"id": "Orianna", "name": "Orianna", "tags": ["Mage"]}, {"id": "Ornn", "name": "Ornn", "tags": ["Tank"]}, {"id": "Pantheon", "name": "Pantheon", "tags": ["Fighter"]}, {"id": "Poppy", "name": "Poppy", "tags": ["Tank"]}, {"id": "Pyke", "name": "Pyke", "tags": ["Support"]}, {"id": "Qiyana", "name": "Qiyana", "tags": ["Assassin"]}, {"id": "Quinn", "name": "Quinn", "tags": ["Marksman"]}, {"id": "Rakan", "name": "Rakan", "tags": ["Support"]}, {"id": "Rammus", "name": "Rammus", "tags": ["Tank"]}, {"id": "RekSai", "name": "RekSai", "tags": ["Fighter"]}, {"id": "Rell", "name": "Rell", "tags": ["Tank"]}, {"id": "Renata", "name": "Renata", "tags": ["Support"]}, {"id": "Renekton", "name": "Renekton", "tags": ["Fighter"]}, {"id": "Rengar", "name": "Rengar", "tags": ["Assassin"]}, {"id": "Riven", "name": "Riven", "tags": ["Fighter"]}, {"id": "Rumble", "name": "Rumble", "tags": ["Fighter"]}, {"id": "Ryze", "name": "Ryze", "tags": ["Mage"]}, {"id": "Samira", "name": "Samira", "tags": ["Marksman"]}, {"id": "Sejuani", "name": "Sejuani", "tags": ["Tank"]}, {"id": "Senna", "name": "Senna", "tags": ["Marksman"]}, {"id": "Seraphine", "name": "Seraphine", "tags": ["Mage"]}, {"id": "Sett", "name": "Sett", "tags": ["Fighter"]}, {"id": "Shaco", "name": "Shaco", "tags": ["Assassin"]}, {"id": "Shen", "name": "Shen", "tags": ["Tank"]}, {"id": "Shyvana", "name": "Shyvana", "tags": ["Fighter"]}, {"id": "Singed", "name": "Singed", "tags": ["Tank"]}, {"id": "Sion", "name": "Sion", "tags": ["Tank"]}, {"id": "Sivir", "name": "Sivir", "tags": ["Marksman"]}, {"id": "Skarner", "name": "Skarner", "tags": ["Tank"]}, {"id": "Smolder", "name": "Smolder", "tags": ["Marksman"]}, {"id": "Sona", "name": "Sona", "tags": ["Support"]}, {"id": "Soraka", "name": "Soraka", "tags": ["Support"]}, {"id": "Swain", "name": "Swain", "tags": ["Mage"]}, {"id": "Sylas", "name": "Sylas", "tags": ["Mage"]}, {"id": "Syndra", "name": "Syndra", "tags": ["Mage"]}, {"id": "TahmKench", "name": "TahmKench", "tags": ["Tank"]}, {"id": "Taliyah", "name": "Taliyah", "tags": ["Mage"]}, {"id": "Talon", "name": "Talon", "tags": ["Assassin"]}, {"id": "Taric", "name": "Taric", "tags": ["Support"]}, {"id": "Teemo", "name": "Teemo", "tags": ["Mage"]}, {"id": "Thresh", "name": "Thresh", "tags": ["Support"]}, {"id": "Tristana", "name": "Tristana", "tags": ["Marksman"]}, {"id": "Trundle", "name": "Trundle", "tags": ["Fighter"]}, {"id": "Tryndamere", "name": "Tryndamere", "tags": ["Fighter"]}, {"id": "TwistedFate", "name": "TwistedFate", "tags": ["Mage"]}, {"id": "Twitch", "name": "Twitch", "tags": ["Marksman"]}, {"id": "Udyr", "name": "Udyr", "tags": ["Fighter"]}, {"id": "Urgot", "name": "Urgot", "tags": ["Fighter"]}, {"id": "Varus", "name": "Varus", "tags": ["Marksman"]}, {"id": "Vayne", "name": "Vayne", "tags": ["Marksman"]}, {"id": "Veigar", "name": "Veigar", "tags": ["Mage"]}, {"id": "Velkoz", "name": "Velkoz", "tags": ["Mage"]}, {"id": "Vex", "name": "Vex", "tags": ["Mage"]}, {"id": "Vi", "name": "Vi", "tags": ["Fighter"]}, {"id": "Viego", "name": "Viego", "tags": ["Fighter"]}, {"id": "Viktor", "name": "Viktor", "tags": ["Mage"]}, {"id": "Vladimir", "name": "Vladimir", "tags": ["Mage"]}, {"id": "Volibear", "name": "Volibear", "tags": ["Fighter"]}, {"id": "Warwick", "name": "Warwick", "tags": ["Fighter"]}, {"id": "MonkeyKing", "name": "MonkeyKing", "tags": ["Fighter"]}, {"id": "Xayah", "name": "Xayah", "tags": ["Marksman"]}, {"id": "Xerath", "name": "Xerath", "tags": ["Mage"]}, {"id": "XinZhao", "name": "XinZhao", "tags": ["Fighter"]}, {"id": "Yasuo", "name": "Yasuo", "tags": ["Fighter"]}, {"id": "Yone", "name": "Yone", "tags": ["Fighter"]}, {"id": "Yorick", "name": "Yorick", "tags": ["Fighter"]}, {"id": "Yuumi", "name": "Yuumi", "tags": ["Support"]}, {"id": "Zac", "name": "Zac", "tags": ["Tank"]}, {"id": "Zed", "name": "Zed", "tags": ["Assassin"]}, {"id": "Zeri", "name": "Zeri", "tags": ["Marksman"]}, {"id": "Ziggs", "name": "Ziggs", "tags": ["Mage"]}, {"id": "Zilean", "name": "Zilean", "tags": ["Support"]}, {"id": "Zoe", "name": "Zoe", "tags": ["Mage"]}, {"id": "Zyra", "name": "Zyra", "tags": ["Mage"]}];
 
+const RANKED_SOLO_QUEUE_ID=420;
 const state={
   version:null, champions:[], selected:null, champDetail:null, communityChampion:null,
   items:[], runeTrees:[], runeByName:new Map(), runeById:new Map(), itemByName:new Map(),
@@ -106,6 +119,25 @@ const state={
   recommendedPerkIds:new Set()
 };
 const $=id=>document.getElementById(id);
+const DEFAULT_ROLE_GROUPS={
+ Jungle:new Set(["Amumu","Belveth","Briar","Diana","Ekko","Elise","Evelynn","Fiddlesticks","Graves","Hecarim","Ivern","JarvanIV","Karthus","Kayn","Khazix","Kindred","LeeSin","Lillia","MasterYi","Nidalee","Nocturne","Nunu","Rammus","RekSai","Rengar","Sejuani","Shaco","Shyvana","Skarner","Udyr","Vi","Viego","Volibear","Warwick","MonkeyKing","XinZhao","Zac"]),
+ Support:new Set(["Alistar","Bard","Blitzcrank","Braum","Janna","Leona","Lulu","Milio","Nami","Nautilus","Pyke","Rakan","Rell","Renata","Senna","Sona","Soraka","Taric","Thresh","Yuumi","Zilean"]),
+ ADC:new Set(["Aphelios","Ashe","Caitlyn","Draven","Ezreal","Jhin","Jinx","Kaisa","Kalista","KogMaw","Lucian","MissFortune","Nilah","Samira","Sivir","Smolder","Tristana","Twitch","Varus","Vayne","Xayah","Zeri"]),
+ Top:new Set(["Aatrox","Camille","Chogath","Darius","DrMundo","Fiora","Gangplank","Garen","Gnar","Gwen","Illaoi","Irelia","Jax","KSante","Kayle","Kled","Malphite","Mordekaiser","Nasus","Olaf","Ornn","Renekton","Riven","Sett","Shen","Singed","Sion","TahmKench","Teemo","Trundle","Tryndamere","Urgot","Yorick"]),
+ Mid:new Set(["Ahri","Akali","Anivia","Annie","AurelionSol","Aurora","Azir","Cassiopeia","Corki","Fizz","Heimerdinger","Hwei","Kassadin","Katarina","Kennen","Leblanc","Lissandra","Lux","Malzahar","Mel","Naafiri","Neeko","Orianna","Qiyana","Ryze","Swain","Sylas","Syndra","Taliyah","Talon","TwistedFate","Veigar","Velkoz","Vex","Viktor","Vladimir","Xerath","Yasuo","Yone","Zed","Ziggs","Zoe"]),
+};
+function defaultRoleForChampion(c){
+ const id=c?.id||c?.name||"";
+ for(const [r,set] of Object.entries(DEFAULT_ROLE_GROUPS))if(set.has(id))return r;
+ const tags=(c?.tags||[]).map(x=>String(x).toLowerCase());
+ if(tags.includes("support"))return "Support";if(tags.includes("marksman"))return "ADC";if(tags.includes("assassin")||tags.includes("mage"))return "Mid";return "Top";
+}
+function setLoading(show,title="Analysing",detail="Calculating the strongest Solo/Duo setup…",progress=50,error=false){
+ const o=$("loaderOverlay"),root=$("appRoot");if(!o)return;
+ o.classList.toggle("hidden",!show);o.classList.toggle("error",!!error);o.setAttribute("aria-busy",show?"true":"false");
+ if(root)root.classList.toggle("is-busy",show);if($("loaderTitle"))$("loaderTitle").textContent=title;if($("loaderDetail"))$("loaderDetail").textContent=detail;if($("loaderBar"))$("loaderBar").style.width=`${Math.max(4,Math.min(100,progress))}%`;
+}
+const nextPaint=()=>new Promise(r=>requestAnimationFrame(()=>setTimeout(r,0)));
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const ls=(l,a,b)=>a+(b-a)*((l-1)/17);
 const magic=(raw,mr,p=0,f=0)=>raw*100/(100+Math.max(0,mr*(1-p)-f));
@@ -205,9 +237,8 @@ function keystoneScore(name,s,g){
   default: v=10;
  }
  const preferred=s.preferred||[];
- const ix=preferred.indexOf(name); if(ix>=0)v+=26-ix*5;
- const rune=state.runeByName.get(name);
- if(rune && state.recommendedPerkIds.has(Number(rune.id))) v+=34;
+ const ix=preferred.indexOf(name); if(ix>=0)v+=40-ix*8;
+ // Empirical priors must be queueId 420 only. CommunityDragon recommendations are not queue-filtered, so they are intentionally excluded.
  return v;
 }
 function minorScore(name,s,g,r){
@@ -237,8 +268,8 @@ function minorScore(name,s,g,r){
  if(n.includes("conditioning"))v+=18*s.tank;
  if(n.includes("overgrowth"))v+=24*s.tank;
  if(n.includes("revitalize"))v+=20*s.sustain;
- if(n.includes("magical footwear"))v+=14*s.mobility+8*(r==="Jungle");
- if(n.includes("cosmic insight"))v+=16*s.engage+8*(r==="Jungle");
+ if(n.includes("magical footwear"))v+=14*s.mobility+30*(r==="Jungle");
+ if(n.includes("cosmic insight"))v+=16*s.engage+30*(r==="Jungle");
  if(n.includes("triple tonic"))v+=12;
  if(n.includes("biscuit"))v+=18*s.sustain+8*s.poke;
  return v;
@@ -355,14 +386,13 @@ function fallbackItems(){
 function candidateItems(){
  const s=signals(),g=goal();
  let xs=(state.items.length?state.items:fallbackItems()).filter(i=>{
-  const gold=i.gold?.total||0;
-  return i.gold?.purchasable!==false&&gold>=2300&&gold<=4000&&i.maps?.["11"]!==false&&(!i.into||i.into.length===0)&&!(i.tags||[]).includes("Boots");
+  const gold=i.gold?.total||0,id=Number(i.id||0),tags=i.tags||[];
+  return i.gold?.purchasable!==false&&i.maps?.["11"]===true&&gold>=2300&&gold<=4000&&id>0&&id<7000&&(!i.into||i.into.length===0)&&!tags.includes("Boots")&&!tags.includes("Consumable")&&!i.requiredChampion&&!i.hideFromAll;
  });
  xs=xs.map(i=>({...i,_fit:itemSignalsScore(i,s,g)})).sort((a,b)=>b._fit-a._fit);
  if(state.selected.id==="Ekko"){
-  const wanted=["Lich Bane","Nashor's Tooth","Stormsurge","Shadowflame","Rabadon's Deathcap","Void Staff","Hextech Rocketbelt"];
-  const preferred=xs.filter(x=>wanted.includes(x.name));
-  xs=[...preferred,...xs.filter(x=>!wanted.includes(x.name))];
+  const wanted=new Set(["Lich Bane","Dusk & Dawn","Dusk and Dawn","Nashor's Tooth","Stormsurge","Shadowflame","Rabadon's Deathcap","Void Staff","Hextech Rocketbelt","Zhonya's Hourglass"]);
+  xs=xs.filter(x=>wanted.has(x.name));
  }
  return xs.slice(0,+$("itemDepth").value);
 }
@@ -388,6 +418,9 @@ function aggregate(path,p,ctx){
   if(d.includes("% magic penetration"))pctM=Math.max(pctM,.35);
   if(d.includes("% armor penetration"))pctA=Math.max(pctA,.30);
  }
+ const names=new Set(path.map(i=>i.name));
+ if(names.has("Rabadon's Deathcap"))ap*=1.30;
+ if(names.has("Void Staff"))pctM=Math.max(pctM,.40);
  return{ap,ad,hp,armor,mr,as,crit,gold,flatM,pctM,lethality,pctA};
 }
 function runeDamage(page,ctx,stats,s){
@@ -438,32 +471,46 @@ function simulateGeneric(path,page,stage){
 }
 function simulateEkko(path,page,stage){
  const ctx=stageCtx(stage),st=aggregate(path,page,ctx),ap=st.ap,baseAD=58+3*(ctx.level-1);
- const nameSet=new Set(path.map(x=>x.name)),q=140+.30*ap,e=(ctx.level>=13?150:125)+.40*ap,passive=ls(ctx.level,30,150)+.80*ap,q2=140+.70*ap;
- let dmg=magic(q,ctx.mr,0,12+st.flatM)+phys(baseAD,ctx.armor)+magic(e,ctx.mr,0,12+st.flatM);
- if(nameSet.has("Lich Bane"))dmg+=magic(.75*baseAD+.45*ap,ctx.mr,0,12+st.flatM);
- if(nameSet.has("Nashor's Tooth"))dmg+=magic(15+.15*ap,ctx.mr,0,12+st.flatM);
- const dusk=nameSet.has("Dusk & Dawn");
- if(dusk)dmg+=magic(.75*baseAD+.10*ap,ctx.mr,0,12+st.flatM);
- else dmg+=phys(baseAD,ctx.armor);
- dmg+=magic(passive,ctx.mr,0,12+st.flatM);
- const atProc=dmg+runeDamage(page,ctx,st,signals())+minorDamage(page,ctx,st,signals());
- dmg=atProc+magic(q2,ctx.mr,0,12+st.flatM);
- if(nameSet.has("Stormsurge"))dmg+=magic(125+.10*ap,ctx.mr,0,12+st.flatM);
- if(page.key.name==="First Strike")dmg*=1.07;
- const perf=dmg+signals().mobility*80;
- return {performance:perf,damage:dmg,atProc,gold:st.gold,eff:perf/st.gold*1000};
+ const names=new Set(path.map(x=>x.name)),has=n=>names.has(n),dusk=has("Dusk & Dawn")||has("Dusk and Dawn");
+ let hp=ctx.hp,total=0;
+ const md=raw=>{let d=magic(raw,ctx.mr,st.pctM,12+st.flatM);if(has("Shadowflame")&&hp<ctx.hp*.40)d*=1.20;hp-=d;total+=d;return d};
+ const pd=raw=>{const d=phys(raw,ctx.armor);hp-=d;total+=d;return d};
+ md(140+.30*ap);pd(baseAD);md((ctx.level>=13?150:ctx.level>=11?125:75)+.40*ap);
+ if(has("Lich Bane"))md(.75*baseAD+.45*ap);
+ if(has("Nashor's Tooth"))md(15+.15*ap);
+ if(dusk)md(.75*baseAD+.10*ap);else pd(baseAD);
+ md(ls(ctx.level,30,150)+.80*ap);
+ let rune=runeDamage(page,ctx,st,signals())+minorDamage(page,ctx,st,signals());hp-=rune;total+=rune;
+ const atProc=total;
+ md(140+.70*ap);
+ if(has("Stormsurge")&&atProc>=ctx.hp*.25)md(125+.10*ap);
+ if(page.key.name==="First Strike"){const bonus=total*.07;hp-=bonus;total+=bonus}
+ const perf=total+signals().mobility*80;
+ return {performance:perf,damage:total,atProc,gold:st.gold,eff:perf/st.gold*1000};
+}
+function ekkoPathPrior(path){
+ if(state.selected?.id!=="Ekko")return 0;const n=path.map(x=>x.name),mr=+$('targetMr').value;let s=0;
+ const first=n[0];if(first==="Lich Bane")s+=34;else if(first==="Dusk & Dawn"||first==="Dusk and Dawn")s+=30;else if(first==="Hextech Rocketbelt")s+=18;else if(first==="Nashor's Tooth")s+=12;else if(first==="Stormsurge")s+=8;else if(first==="Rabadon's Deathcap")s-=55;else if(first==="Void Staff")s-=70;else if(first==="Zhonya's Hourglass")s-=22;
+ if(n[1]==="Stormsurge")s+=24;if(n[1]==="Shadowflame")s+=17;if(n[1]==="Rabadon's Deathcap")s+=5;if(n[1]==="Void Staff")s+=(mr>=70?12:-12);
+ if(n[2]==="Rabadon's Deathcap")s+=26;if(n[2]==="Void Staff")s+=(mr>=60?22:4);if(n[2]==="Shadowflame")s+=16;if(n[2]==="Zhonya's Hourglass")s+=6;
+ return s;
 }
 function simulate(path,page,stage){return state.selected.id==="Ekko"?simulateEkko(path,page,stage):simulateGeneric(path,page,stage)}
 
 function generateRows(){
  const pages=generateRunePages(),items=candidateItems(),paths=perms(items,3),rows=[];
  for(const p of pages)for(const path of paths){
-  if(state.selected.id==="Ekko"&&path.some(x=>x.name==="Lich Bane")&&path.some(x=>x.name==="Dusk & Dawn"))continue;
-  const a=simulate([path[0]],p,1),b=simulate(path.slice(0,2),p,2),c=simulate(path,p,3);
-  rows.push({page:p,path,s1:a,s2:b,s3:c,stage1:a.performance,stage2:b.performance,stage3:c.performance,proc:c.atProc,efficiency:c.eff,runeFit:p.fit});
+  if(state.selected.id==="Ekko"){
+   const names=path.map(x=>x.name);
+   if(names.includes("Lich Bane")&&(names.includes("Dusk & Dawn")||names.includes("Dusk and Dawn")))continue;
+   if(["Rabadon's Deathcap","Void Staff","Zhonya's Hourglass"].includes(names[0]))continue;
+  }
+  const a=simulate([path[0]],p,1),b=simulate(path.slice(0,2),p,2),c=simulate(path,p,3),pathFit=ekkoPathPrior(path);
+  rows.push({page:p,path,s1:a,s2:b,s3:c,stage1:a.performance,stage2:b.performance,stage3:c.performance,proc:c.atProc,efficiency:c.eff,runeFit:p.fit,pathFit});
  }
- const max={stage1:Math.max(...rows.map(x=>x.stage1)),stage2:Math.max(...rows.map(x=>x.stage2)),stage3:Math.max(...rows.map(x=>x.stage3)),proc:Math.max(...rows.map(x=>x.proc)),runeFit:Math.max(...rows.map(x=>x.runeFit))};
- rows.forEach(x=>x.overall=100*(.18*x.stage1/max.stage1+.28*x.stage2/max.stage2+.36*x.stage3/max.stage3+.08*x.proc/max.proc+.10*x.runeFit/max.runeFit));
+ if(!rows.length)return[];
+ const max={stage1:Math.max(...rows.map(x=>x.stage1)),stage2:Math.max(...rows.map(x=>x.stage2)),stage3:Math.max(...rows.map(x=>x.stage3)),proc:Math.max(...rows.map(x=>x.proc)),runeFit:Math.max(...rows.map(x=>x.runeFit)),pathFit:Math.max(1,...rows.map(x=>Math.max(0,x.pathFit)))};
+ rows.forEach(x=>x.overall=100*(.18*x.stage1/max.stage1+.27*x.stage2/max.stage2+.31*x.stage3/max.stage3+.07*x.proc/max.proc+.12*x.runeFit/max.runeFit+.05*Math.max(0,x.pathFit)/max.pathFit));
  for(const k of ["stage1","stage2","stage3"])[...rows].sort((a,b)=>b[k]-a[k]).forEach((x,i)=>x["rank"+k.slice(-1)]=i+1);
  return rows;
 }
@@ -474,8 +521,8 @@ function renderChampion(){
  $("champName").textContent=c.name;$("champMeta").textContent=(c.tags||[]).join(" · ");
  $("confidence").textContent=exact?"Exact Ekko model":"Adaptive champion model";$("confidence").className="badge "+(exact?"exact":"adaptive");
  const s=signals();
- $("note").innerHTML=exact?`<strong>Ekko exact adapter:</strong> the Q/E/passive quick-exit sequence is modelled directly. Rune candidates are re-evaluated by role and can receive the current League-client recommendation prior. Data refreshes automatically.`
- : `<strong>${c.name} · ${role()}:</strong> rune pages start from the current Riot rune tree and receive a live-client recommendation prior when available. Champion signals prefer CommunityDragon <span class="source">latest client data</span>; items use the newest official Riot snapshot with current-client descriptions/prices overlaid when available.`;
+ $("note").innerHTML=exact?`<strong>Ekko exact adapter:</strong> the Q/E/passive quick-exit sequence is modelled directly. Rune candidates are re-evaluated by role. Empirical priors are restricted to Ranked Solo/Duo (420); unfiltered client recommendations are excluded.`
+ : `<strong>${c.name} · ${role()}:</strong> rune pages start from the current Riot rune tree. Only Ranked Solo/Duo (420) empirical priors are permitted; unfiltered cross-queue recommendations are excluded. Champion signals prefer CommunityDragon <span class="source">latest client data</span>; items use the newest official Riot snapshot with current-client descriptions/prices overlaid when available.`;
  $("modelTitle").textContent=exact?"Ekko · exact quick-exit model":`${c.name} · adaptive ${signals().profile} model`;
  $("combo").textContent=exact?"Q1 → E2 → AA → Passive → leave → Q2":`${goal()} model · damage + durability + utility + rune fit`;
  $("modelNotes").textContent=exact?"Runes are no longer fixed: Jungle and Mid can produce different pages. Overall ranking combines each power spike with rune fit."
@@ -495,7 +542,11 @@ function renderTable(rows){
  [...$("rows").querySelectorAll("tr")].forEach((tr,i)=>tr.onclick=()=>renderHero(rows[i]));
 }
 function recalc(){
- if(!state.selected)return;refreshClientRecommendationPrior();renderChampion();let rows=generateRows(),k=$("rankBy").value;rows.sort((a,b)=>sortVal(b,k)-sortVal(a,k));state.rows=rows;renderHero(rows[0]);renderTable(rows);
+ if(!state.selected)return;renderChampion();let rows=generateRows(),k=$("rankBy").value;rows.sort((a,b)=>sortVal(b,k)-sortVal(a,k));state.rows=rows;if(!rows.length)throw new Error("No valid current Summoner's Rift build paths found");renderHero(rows[0]);renderTable(rows);
+}
+async function analyseSelectedChampion(){
+ const name=state.selected?.name||"champion";setLoading(true,`Analysing ${name}`,`Ranked Solo/Duo · queue 420 · evaluating runes and valid 1 → 2 → 3 item paths…`,82);await nextPaint();
+ try{recalc();setLoading(false)}catch(e){console.error(e);setLoading(true,`Couldn’t analyse ${name}`,e.message||String(e),100,true)}
 }
 
 const NO_CACHE={cache:"no-store"};
@@ -622,18 +673,15 @@ function refreshClientRecommendationPrior(){
 
 async function selectChampion(){
  state.selected=state.champions.find(x=>x.id===$("champion").value)||state.champions[0];
+ $("role").value=defaultRoleForChampion(state.selected);$("goal").value="auto";$("keystone").value="auto";$("secondary").value="auto";
+ setLoading(true,`Loading ${state.selected.name}`,`Fetching current patch champion data, then calculating the best Ranked Solo/Duo setup…`,64);await nextPaint();
  state.champDetail=null; state.communityChampion=null;
  const riotUrl=state.version?`https://ddragon.leagueoflegends.com/cdn/${state.version}/data/en_US/champion/${state.selected.id}.json`:null;
  const clientKey=state.selected.key;
  const clientUrl=clientKey?`https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champions/${clientKey}.json`:null;
- const [riotDetail,clientDetail]=await Promise.all([
-  riotUrl?optionalJson(riotUrl):Promise.resolve(null),
-  clientUrl?optionalJson(clientUrl):Promise.resolve(null)
- ]);
- state.champDetail=riotDetail?.data?.[state.selected.id]||null;
- state.communityChampion=clientDetail;
- refreshClientRecommendationPrior();
- recalc();
+ const [riotDetail,clientDetail]=await Promise.all([riotUrl?optionalJson(riotUrl):Promise.resolve(null),clientUrl?optionalJson(clientUrl):Promise.resolve(null)]);
+ state.champDetail=riotDetail?.data?.[state.selected.id]||null;state.communityChampion=clientDetail;
+ await analyseSelectedChampion();
 }
 function populateFilters(){
  const trees=state.runeTrees.length?state.runeTrees:fallbackRunes(),keys=trees.flatMap(t=>(t.slots?.[0]?.runes||[]).map(x=>x.name));
@@ -642,7 +690,7 @@ function populateFilters(){
  $("secondary").innerHTML='<option value="auto">Consider all legal</option>'+trees.map(x=>`<option>${x.name}</option>`).join("");
 }
 async function loadRiot(){
- $("status").textContent="Resolving newest League data…";
+ $("status").textContent="Resolving newest League data…";setLoading(true,"Checking current patch","Resolving Riot Data Dragon and current Summoner’s Rift assets…",18);await nextPaint();
  const snapshot=await loadSnapshot();
  state.snapshot=snapshot;
  if(snapshot){
@@ -659,6 +707,7 @@ async function loadRiot(){
   if(Array.isArray(versions)&&versions.length)directVersion=String(versions[0]);
  }catch{}
 
+ setLoading(true,"Loading current patch","Fetching champions, current items and rune trees…",36);await nextPaint();
  const desiredVersion=directVersion||snapshot?.version;
  let championJson=snapshot?.champion||null,itemJson=snapshot?.item||null,runesJson=snapshot?.runes||null;
 
@@ -699,6 +748,7 @@ async function loadRiot(){
  if(liveRecommendations)state.communityRecommendations=liveRecommendations;
  if(livePerks)state.communityPerks=livePerks;
 
+ setLoading(true,"Preparing optimiser","Filtering current Summoner’s Rift data and champion models…",58);await nextPaint();
  itemJson=overlayCommunityItems(itemJson,state.communityItems);
 
  state.champions=Object.values(championJson.data||{});
@@ -711,15 +761,15 @@ async function loadRiot(){
  const fetched=snapshot?.manifest?.fetched_at;
  const stamp=fetched?new Date(fetched).toLocaleString():"runtime only";
  $("riotVersion").textContent=`Riot Data Dragon ${state.version||"unknown"} · CommunityDragon latest · snapshot ${stamp}`;
- $("status").textContent=`Live data · Riot ${state.version||"?"} + client latest`;
+ $("status").textContent=`Live Riot ${state.version||"?"} · Ranked Solo/Duo only`;
  await selectChampion();
 }
-function reset(){ $("role").value="Jungle";$("goal").value="auto";$("rankBy").value="overall";$("keystone").value="auto";$("secondary").value="auto";$("dhSouls").value=10;$("targetHp").value=1900;$("targetMr").value=45;$("targetArmor").value=72;$("runeDepth").value=10;$("itemDepth").value=10;recalc() }
+function reset(){ $("role").value=defaultRoleForChampion(state.selected);$("goal").value="auto";$("rankBy").value="overall";$("keystone").value="auto";$("secondary").value="auto";$("dhSouls").value=10;$("targetHp").value=1900;$("targetMr").value=45;$("targetArmor").value=72;$("runeDepth").value=10;$("itemDepth").value=10 }
 function bind(){
- $("champion").onchange=selectChampion;["role","goal","rankBy","keystone","secondary","dhSouls","targetHp","targetMr","targetArmor","runeDepth","itemDepth"].forEach(id=>$(id).oninput=recalc);$("reset").onclick=reset;document.querySelectorAll("th.sort").forEach(th=>th.onclick=()=>{$("rankBy").value=th.dataset.sort;recalc()});
+ $("champion").onchange=selectChampion;["role","goal","rankBy","keystone","secondary","runeDepth","itemDepth"].forEach(id=>$(id).onchange=analyseSelectedChampion);["dhSouls","targetHp","targetMr","targetArmor"].forEach(id=>$(id).onchange=analyseSelectedChampion);$("reset").onclick=async()=>{reset();await analyseSelectedChampion()};document.querySelectorAll("th.sort").forEach(th=>th.onclick=async()=>{$("rankBy").value=th.dataset.sort;await analyseSelectedChampion()});
 }
 (async function(){
- try{bind();await loadRiot()}catch(e){console.error(e);state.champions=FALLBACK;state.runeTrees=fallbackRunes();populateFilters();$("champion").innerHTML=FALLBACK.map(c=>`<option value="${c.id}" ${c.id==="Ekko"?"selected":""}>${prettyId(c.id)}</option>`).join("");state.selected=FALLBACK.find(x=>x.id==="Ekko");$("status").textContent="Live sources unavailable · bundled fallback";recalc()}
+ try{bind();await loadRiot()}catch(e){console.error(e);state.champions=FALLBACK;state.runeTrees=fallbackRunes();populateFilters();$("champion").innerHTML=FALLBACK.map(c=>`<option value="${c.id}" ${c.id==="Ekko"?"selected":""}>${prettyId(c.id)}</option>`).join("");state.selected=FALLBACK.find(x=>x.id==="Ekko");$("status").textContent="Live sources unavailable";setLoading(true,"Couldn’t load League data",e.message||String(e),100,true)}
 })();
 </script>
 </body>

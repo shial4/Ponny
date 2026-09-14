@@ -1,60 +1,41 @@
-# Pony deployment checklist
+# Deploy/update Pony
 
-## 1. Enable Pages once
+## GitHub Pages setting
 
-Go to:
+Use:
 
-`Settings → Pages → Build and deployment`
+```text
+Settings → Pages
+Source: Deploy from a branch
+Branch: master
+Folder: / (root)
+```
 
-Set:
+Do not add `actions/deploy-pages`.
 
-`Source: GitHub Actions`
+## Replace the current repo
 
-This is required before `actions/deploy-pages` can create a Pages deployment.
+Extract this ZIP into your local `Ponny` repository so `index.html` is at repository root.
 
-## 2. Push the repository
+Then:
 
-The workflow runs automatically for `main` and `master`.
+```bash
+git add -A
+git status
+git commit -m "Fix Pony SoloQ optimiser and loading UX"
+git push
+```
 
-You can also run it manually:
+Verify that `git status` shows deletion of any old Pages deployment workflow.
 
-`Actions → Build and deploy Pony → Run workflow`
-
-## 3. Expected workflow jobs
-
-The workflow contains two jobs:
-
-1. `Build static site`
-2. `Deploy GitHub Pages`
-
-The data refresh is intentionally non-blocking.
-
-If Riot or CommunityDragon is temporarily unavailable, `Build static site` still stages the existing snapshot and Pony's browser runtime can live-fetch the newest available data.
-
-## 4. If `Configure GitHub Pages` fails
-
-Check:
-
-- Settings → Pages → Source is **GitHub Actions**
-- Actions are enabled for the repository
-- The workflow has `pages: write` and `id-token: write`
-- If the repo is private, your GitHub plan supports private Pages
-
-## 5. If `Deploy Pony` fails
-
-Open the failed Actions run and copy the complete text from the `Deploy Pony` step.
-
-The deployment URL alone does not expose private repository logs.
-
-## 6. Local validation
+## Validate first
 
 ```bash
 python scripts/validate-project.py
-python3 -m http.server 8080
 ```
 
-Then open:
+## Expected URL
 
 ```text
-http://localhost:8080
+https://shial4.github.io/Ponny/
 ```

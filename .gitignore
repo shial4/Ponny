@@ -1,13 +1,10 @@
 # macOS
 .DS_Store
 
-# IDEs
+# IDE
 .idea/
 .vscode/
 
-# Temporary files
+# Local
 *.log
-*.tmp
-
-# Local build artifact
-dist/
+.tmp/

@@ -1,14 +1,21 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "generated": false,
   "fetched_at": null,
+  "queue_policy": {
+    "name": "Ranked Solo/Duo",
+    "queue_id": 420,
+    "locked": true
+  },
   "riot": {
     "ddragon_version": null,
-    "source": "https://ddragon.leagueoflegends.com/api/versions.json"
+    "versions_url": "https://ddragon.leagueoflegends.com/api/versions.json",
+    "mode": "runtime"
   },
   "communitydragon": {
     "channel": "latest",
-    "source": "https://raw.communitydragon.org/latest/"
+    "base_url": "https://raw.communitydragon.org/latest/",
+    "mode": "runtime"
   },
-  "note": "This placeholder is replaced by scripts/fetch-latest-data.py during GitHub Pages deployment."
+  "note": "Pony resolves current static League data in the browser. Empirical recommendations are permitted only when explicitly scoped to Ranked Solo/Duo queueId 420."
 }
