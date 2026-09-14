@@ -1,5 +1,13 @@
 # Pony
 
+## Reliability guardrails
+
+This build adds a hard champion-scaling audit before item search. Pony determines AP/AD/HP/hybrid affinity from observed spell ratios plus current-client metadata, then removes mechanically incompatible item families before simulation.
+
+For example, an AP-primary Ekko model cannot recommend pure lethality/crit/AD paths, while a physical-assassin Qiyana model cannot drift into AP items. Marksmen such as Corki are protected from being classified as AP-only merely because their dealt damage type is magic.
+
+See [`RELIABILITY.md`](RELIABILITY.md).
+
 Pony is a Ranked Solo/Duo (`queueId = 420`) League of Legends OTP build/rune optimiser.
 
 ## Architecture

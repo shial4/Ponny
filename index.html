@@ -174,7 +174,7 @@ const RANK_OPTIONS=[{value:"overall",label:"Recommended"},{value:"stage1",label:
 const SOLOQ_PRIORS={
  "Ekko|Jungle":{patch:"16.18",source:"Ranked Solo · Emerald+",keystone:"Dark Harvest",secondaryTree:"Inspiration",items:["Dusk and Dawn","Shadowflame","Rabadon's Deathcap"],confidence:.92},
  "DrMundo|Top":{patch:"16.18",source:"Ranked Solo · Emerald+",keystone:"Grasp of the Undying",secondaryTree:"Inspiration",items:["Warmog's Armor"],confidence:.82},
- "Qiyana|Mid":{patch:"16.18",source:"Ranked Solo · Emerald+",keystone:"Electrocute",secondaryTree:"Sorcery",items:["Profane Hydra"],confidence:.84}
+ "Qiyana|Mid":{patch:"16.18",source:"Ranked Solo · Emerald+",keystone:"Electrocute",secondaryTree:"Precision",items:["Voltaic Cyclosword","Profane Hydra","Serylda\'s Grudge"],confidence:.90,note:"Current Ranked Solo baseline: Electrocute + Precision with lethality/haste core."}
 };
 function currentPrior(){if($("goal")?.value!=="auto")return null;const p=SOLOQ_PRIORS[`${state.selected?.id||state.selected?.name}|${role()}`];if(!p)return null;return String(state.version||"").startsWith(p.patch)?p:null}
 function itemNameMatches(actual,expected){const a=norm(actual),e=norm(expected);return a===e||(e==="duskanddawn"&&a==="duskdawn")}
@@ -408,6 +408,8 @@ function candidateItems(){
  if(!model)throw new Error("Champion mechanics are not compiled yet");
  const objective=goal(),targetMR=+$("targetMr").value;
  let xs=currentCompletedItems();
+ xs=xs.filter(item=>window.PonyItemEngine.hardCompatible(item,model,objective));
+ if(xs.length<3)throw new Error(`Only ${xs.length} stat-compatible current items found for ${state.selected?.name||"champion"}. Pony refuses to recommend incompatible items.`);
 
  xs=xs.map(item=>{
   const baseFit=window.PonyItemEngine.compatibility(item,model,objective,role());
@@ -435,6 +437,9 @@ function candidateItems(){
    if(found&&!keep.includes(found))keep.push(found);
   }
  }
+ const primary=model.features.primaryStat;
+ if(primary==="AP"&&keep.length&&keep.every(i=>Number(i.stats?.FlatMagicDamageMod||0)===0))throw new Error(`Model integrity check failed: ${state.selected?.name} is AP-primary but no AP items survived.`);
+ if(primary==="AD"&&keep.length&&keep.every(i=>Number(i.stats?.FlatPhysicalDamageMod||0)===0))throw new Error(`Model integrity check failed: ${state.selected?.name} is AD-primary but no AD items survived.`);
  return keep;
 }
 function itemUrl(i){
@@ -581,7 +586,7 @@ function renderChampion(){
  }
 
  const coverage=Math.round((model.coverage||0)*100);
- $("confidence").textContent=`Mechanics ${coverage}%`;
+ $("confidence").textContent=`${model.features.primaryStat} scaling · ${coverage}%`;
  $("confidence").className="badge "+(coverage>=80?"exact":"adaptive");
 
  const summary=window.PonyChampionEngine.modelSummary(
@@ -591,7 +596,7 @@ function renderChampion(){
  state.modelSummary=summary;
  const sources=[`P:${summary.passiveSource}`,...Object.entries(summary.abilitySources).map(([k,v])=>`${k}:${v}`)].join(" · ");
 
- $("note").innerHTML=`<strong>${c.name} · ${role()}:</strong> Pony compiled this recommendation from the champion’s actual passive and Q/W/E/R mechanics. <span class="source">${model.sourceLabel}</span> · coverage ${coverage}%. No generic assassin/mage/fighter damage formula is used.`;
+ $("note").innerHTML=`<strong>${c.name} · ${role()}:</strong> Pony compiled this recommendation from the champion’s passive and Q/W/E/R mechanics. Primary scaling: <span class="source">${model.features.primaryStat}</span> (${Math.round(model.features.affinityConfidence*100)}% affinity confidence). Sources: <span class="source">${model.sourceLabel}</span> · mechanics coverage ${coverage}%. Incompatible primary-stat items are excluded before build search.`;
  $("modelTitle").textContent=`${c.name} · compiled combat model`;
  $("combo").textContent=summary.comboLabel||"Objective-specific rotation";
  $("modelNotes").textContent=`Ability sources: ${sources}. Rank priority: ${summary.rankPriority.join(" → ")}. Items and every legal rune page are evaluated against this compiled model for ${GOAL_OPTIONS.find(x=>x.value===$("goal").value)?.label||"the selected objective"}.`;
@@ -881,9 +886,9 @@ function populateFilters(){
 
 const TEST_MODE=new URLSearchParams(location.search).has("fixture")||new URLSearchParams(location.search).has("smoke");
 const SMOKE_MODE=new URLSearchParams(location.search).has("smoke");
-function smokeItems(){const rows=[["3100","Lich Bane",2900,100],["3101","Dusk and Dawn",3100,60],["3102","Nashor's Tooth",2900,80],["3103","Stormsurge",2800,90],["3104","Shadowflame",3200,110],["3105","Rabadon's Deathcap",3500,130],["3106","Void Staff",3000,95],["3107","Hextech Rocketbelt",2650,60],["3108","Zhonya's Hourglass",3250,105],["4001","Warmog's Armor",3100,0],["4002","Profane Hydra",3200,0]];return rows.map(([id,name,gold,ap])=>({id,name,gold:{total:gold,purchasable:true},stats:{FlatMagicDamageMod:ap},tags:[],maps:{"11":true},into:[],image:{full:""},description:""}))}
+function smokeItems(){const rows=[["3100","Lich Bane",2900,100,0,"Spellblade 10 Ability Haste"],["3101","Dusk and Dawn",3100,60,0,"Spellblade 20 Ability Haste"],["3102","Nashor's Tooth",2900,80,0,"50% Attack Speed 15 Ability Haste"],["3103","Stormsurge",2800,90,0,"15 Magic Penetration"],["3104","Shadowflame",3200,110,0,"15 Magic Penetration"],["3105","Rabadon's Deathcap",3500,130,0,""],["3106","Void Staff",3000,95,0,"40% Magic Penetration"],["3107","Hextech Rocketbelt",2650,60,0,"20 Ability Haste"],["3108","Zhonya's Hourglass",3250,105,0,""],["4001","Warmog's Armor",3100,0,0,"1000 Health"],["4002","Profane Hydra",3200,0,60,"18 Lethality 20 Ability Haste"]];return rows.map(([id,name,gold,ap,ad,description])=>({id,name,gold:{total:gold,purchasable:true},stats:{FlatMagicDamageMod:ap,FlatPhysicalDamageMod:ad},tags:[],maps:{"11":true},into:[],image:{full:""},description}))}
 async function loadFixtureData(){state.version="16.18.1";state.champions=[{id:"Ekko",name:"Ekko",tags:["Assassin","Mage"]},{id:"DrMundo",name:"Dr. Mundo",tags:["Tank","Fighter"]},{id:"Qiyana",name:"Qiyana",tags:["Assassin"]},{id:"Malphite",name:"Malphite",tags:["Tank","Fighter"]},{id:"Ahri",name:"Ahri",tags:["Mage","Assassin"]},{id:"Naafiri",name:"Naafiri",tags:["Assassin"]}];state.items=smokeItems();state.ddragonItemsById=new Map(state.items.map(x=>[String(x.id),x]));state.communityItems=[];state.runeTrees=fallbackRunes();populateFilters();$("champion").innerHTML=state.champions.map(c=>`<option value="${c.id}">${c.name}</option>`).join("");$("status").textContent="Fixture · Ranked Solo/Duo";renderChampionPicker();setLoading(false);showPicker();if(SMOKE_MODE)setTimeout(runSmokeSuite,30)}
-async function runSmokeSuite(){try{const assert=(v,m)=>{if(!v)throw new Error(m)};assert(!$("landingView").classList.contains("viewHidden"),"picker visible on first load");await chooseChampion("Ekko");assert(state.rows.length>0,"Ekko rows");const top=state.rows[0];assert(top.page.key.name==="Dark Harvest",`expected Dark Harvest, got ${top.page.key.name}`);assert(top.page.secondaryTree==="Inspiration",`expected Inspiration, got ${top.page.secondaryTree}`);assert(itemNameMatches(top.path[0].name,"Dusk and Dawn"),`expected Dusk first, got ${top.path[0].name}`);assert(top.path[1].name==="Shadowflame",`expected Shadowflame second, got ${top.path[1].name}`);assert(top.path[2].name==="Rabadon's Deathcap",`expected Rabadon third, got ${top.path[2].name}`);assert(!top.path.some(i=>/Gunblade|Cruelty|Shattered Queen/.test(i.name)),"no legacy/mode items");$("goal").value="trade";recalc();assert(state.rows.length>0,"trade rows");const tradeTop=state.rows[0];assert(tradeTop.path[0].name==="Lich Bane",`quick trade expected Lich first, got ${tradeTop.path[0].name}`);assert(tradeTop.path[1].name==="Stormsurge",`quick trade expected Stormsurge second, got ${tradeTop.path[1].name}`);const comparison=runeComparisonForRow(tradeTop);assert(comparison.some(x=>x.page.key.name==="Dark Harvest"&&x.page.secondaryTree==="Precision"),"expected DH + Precision comparison");assert(comparison.some(x=>x.page.key.name==="Electrocute"),"expected Electrocute comparison");assert(comparison.some(x=>x.page.key.name==="First Strike"),"expected First Strike comparison");$("goal").value="burst";recalc();assert(state.rows[0].path[0].name==="Lich Bane","max burst expected Lich first");assert(state.rows[0].path[1].name==="Stormsurge","max burst expected Stormsurge second");document.body.dataset.smoke="pass";document.title="Pony smoke PASS";setLoading(false)}catch(e){console.error(e);document.body.dataset.smoke="fail";document.body.dataset.smokeError=e.message;document.title="Pony smoke FAIL";setLoading(false)}}
+async function runSmokeSuite(){try{const assert=(v,m)=>{if(!v)throw new Error(m)};assert(!$("landingView").classList.contains("viewHidden"),"picker visible on first load");await chooseChampion("Ekko");assert(state.rows.length>0,"Ekko rows");const top=state.rows[0];assert(top.page.key.name==="Dark Harvest",`expected Dark Harvest, got ${top.page.key.name}`);assert(top.page.secondaryTree==="Inspiration",`expected Inspiration, got ${top.page.secondaryTree}`);assert(itemNameMatches(top.path[0].name,"Dusk and Dawn"),`expected Dusk first, got ${top.path[0].name}`);assert(top.path[1].name==="Shadowflame",`expected Shadowflame second, got ${top.path[1].name}`);assert(top.path[2].name==="Rabadon's Deathcap",`expected Rabadon third, got ${top.path[2].name}`);assert(!top.path.some(i=>/Gunblade|Cruelty|Shattered Queen/.test(i.name)),"no legacy/mode items");assert(!top.path.some(i=>/Profane Hydra|Bloodthirster|Youmuu|Umbral Glaive|Essence Reaver/.test(i.name)),"AP Ekko must not recommend pure AD items");$("goal").value="trade";recalc();assert(state.rows.length>0,"trade rows");const tradeTop=state.rows[0];assert(tradeTop.path[0].name==="Lich Bane",`quick trade expected Lich first, got ${tradeTop.path[0].name}`);assert(tradeTop.path[1].name==="Stormsurge",`quick trade expected Stormsurge second, got ${tradeTop.path[1].name}`);const comparison=runeComparisonForRow(tradeTop);assert(comparison.some(x=>x.page.key.name==="Dark Harvest"&&x.page.secondaryTree==="Precision"),"expected DH + Precision comparison");assert(comparison.some(x=>x.page.key.name==="Electrocute"),"expected Electrocute comparison");assert(comparison.some(x=>x.page.key.name==="First Strike"),"expected First Strike comparison");$("goal").value="burst";recalc();assert(state.rows[0].path[0].name==="Lich Bane","max burst expected Lich first");assert(state.rows[0].path[1].name==="Stormsurge","max burst expected Stormsurge second");document.body.dataset.smoke="pass";document.title="Pony smoke PASS";setLoading(false)}catch(e){console.error(e);document.body.dataset.smoke="fail";document.body.dataset.smokeError=e.message;document.title="Pony smoke FAIL";setLoading(false)}}
 
 async function loadRiot(){
  $("status").textContent="Resolving newest League data…";$("pickerStatus").textContent="Loading current champion roster…";setLoading(false);

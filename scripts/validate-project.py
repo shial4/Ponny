@@ -2,13 +2,13 @@
 from pathlib import Path
 import re, subprocess, sys
 root=Path(__file__).resolve().parents[1]
-required=['index.html','assets/pony.svg','site.webmanifest','.nojekyll','src/champion-engine.js','src/rune-engine.js','src/item-engine.js','tests/engine.test.js','tests/all-roster.test.js']
+required=['index.html','assets/pony.svg','site.webmanifest','.nojekyll','RELIABILITY.md','src/champion-engine.js','src/rune-engine.js','src/item-engine.js','tests/engine.test.js','tests/all-roster.test.js']
 errors=[]
 for rel in required:
  p=root/rel
  if not p.is_file():errors.append('missing '+rel)
 html=(root/'index.html').read_text(encoding='utf-8')
-for marker in ['compileSelectedChampionModel','PonyChampionEngine','PonyRuneEngine','PonyItemEngine','allLegalRunePages','Ranked Solo/Duo']:
+for marker in ['compileSelectedChampionModel','PonyChampionEngine','PonyRuneEngine','PonyItemEngine','allLegalRunePages','Ranked Solo/Duo','hardCompatible','stat-compatible current items']:
  if marker not in html:errors.append('index missing '+marker)
 if 'function simulateGeneric' in html:errors.append('generic simulator must not return')
 for rel in ['src/champion-engine.js','src/rune-engine.js','src/item-engine.js']:

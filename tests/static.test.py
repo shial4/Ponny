@@ -20,3 +20,14 @@ checks={
 failed=[name for name,ok in checks.items() if not ok]
 for name,ok in checks.items(): print(('PASS' if ok else 'FAIL'),name)
 if failed: raise SystemExit('failed: '+', '.join(failed))
+
+# Reliability guardrails must remain in production.
+for marker in [
+    "hardCompatible",
+    "primaryStat",
+    "affinityConfidence",
+    "stat-compatible current items",
+    "AP scaling",
+]:
+    assert marker in html or marker in Path('src/item-engine.js').read_text() or marker in Path('src/champion-engine.js').read_text(), marker
+print('PASS stat-affinity reliability guardrails')
