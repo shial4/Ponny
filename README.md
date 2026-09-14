@@ -1,5 +1,33 @@
 # Pony
 
+## Champion-first UX
+
+Pony deliberately does **not** calculate a champion on first page load.
+
+The flow is now:
+
+```text
+Open Pony
+  ↓
+Load current champion roster
+  ↓
+Show champion picker
+  ↓
+User chooses champion
+  ↓
+Auto-select likely Solo/Duo role
+  ↓
+Show analysis loader
+  ↓
+Fetch champion detail + calculate
+  ↓
+Show recommended runes / 1 → 2 → 3 item path
+```
+
+The analysis screen includes **Change champion**, which returns to the picker rather than silently recalculating a default champion.
+
+This avoids presenting an empty analysis dashboard or a full-screen "Loading Ekko" experience before the user has chosen Ekko.
+
 Pony is a League of Legends OTP build optimiser focused on **Ranked Solo/Duo only**.
 
 ## Current product rules
