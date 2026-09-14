@@ -1,3 +1,17 @@
+# Important: first GitHub Pages deployment
+
+Before the first workflow can publish, open:
+
+**Repository → Settings → Pages → Build and deployment → Source → GitHub Actions**
+
+GitHub's Pages deployment action requires Pages to already be enabled/configured for the repository. If Pages is disabled, `actions/deploy-pages` can fail with a 404/Not Found style deployment error.
+
+If the repository is private, your GitHub plan must also support Pages for private repositories.
+
+The workflow intentionally treats Riot/CommunityDragon refresh errors as warnings so an upstream outage cannot prevent Pony itself from deploying.
+
+---
+
 # Pony
 
 **Pony** is a static League of Legends OTP build optimiser.
