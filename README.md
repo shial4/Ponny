@@ -1,5 +1,13 @@
 # Pony
 
+## Explainable rune comparison
+
+The #1 setup is always expanded with **Why this is #1**. Pony enumerates the legal rune-page space first, then compares the best rune variants on the **same item path, target and objective**.
+
+For Ekko the comparison intentionally keeps visible Dark Harvest + Inspiration, Dark Harvest + Precision, Electrocute, First Strike, Hail of Blades, and Conqueror when relevant. Each card shows proc-window output, total output, delta versus the strongest page, and a short how-to-play explanation.
+
+First Strike can affect multiple champions during its short initiation window, so it can feel good in a 1v2 if you start the fight. It is not a true long-duration keystone after that window ends; Dark Harvest resets and Conqueror are better models for genuinely extended combat.
+
 
 ## Product-quality recommendation model
 

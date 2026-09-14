@@ -20,3 +20,7 @@ checks={
 failed=[name for name,ok in checks.items() if not ok]
 for name,ok in checks.items(): print(('PASS' if ok else 'FAIL'),name)
 if failed: raise SystemExit('failed: '+', '.join(failed))
+
+for marker in ["Why this is #1","allLegalRunePages","bestRuneVariantPages","runeComparisonForRow","runePlayGuide","Dark Harvest","Precision","Electrocute","First Strike","Hail of Blades","Conqueror"]:
+    assert marker in html, marker
+print("PASS explainable rune UI")
