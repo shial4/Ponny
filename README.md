@@ -1,5 +1,59 @@
 # Pony
 
+
+## Product-quality recommendation model
+
+Pony now separates **Ranked best** from laboratory damage modes.
+
+For champion/role combinations with a current-patch Ranked Solo baseline, the default recommendation blends:
+
+- current SoloQ build/rune evidence;
+- 1-item, 2-item and 3-item simulation;
+- rune/champion fit;
+- realistic build-order quality;
+- proc/front-loaded damage.
+
+Alternative objectives such as **Max burst** and **Quick trade** deliberately allow a different mathematical path.
+
+For Ekko Jungle on the current 16.18 static-data family, the Ranked Solo baseline is anchored to:
+
+```text
+Dark Harvest + Inspiration
+Dusk and Dawn → Shadowflame → Rabadon's Deathcap
+```
+
+The advanced simulator can still expose Lich/Stormsurge-style alternatives for burst or quick-trade optimisation.
+
+### UI / UX
+
+The analysis screen now uses custom controls instead of native selects for the main decisions:
+
+- role;
+- optimisation objective;
+- result ranking.
+
+The queue is displayed as a locked Ranked Solo/Duo context chip instead of a fake configurable picker.
+
+Advanced numeric controls are collapsed by default. Each recommendation also includes a **Why Pony picked this** explanation and confidence/source badge.
+
+### Automated validation
+
+CI runs:
+
+```bash
+python scripts/validate-project.py
+node tests/model.test.js
+python tests/static.test.py
+```
+
+The app also contains a deterministic browser fixture/self-test mode:
+
+```text
+?smoke=1
+```
+
+which verifies the champion-first flow and asserts that the Ekko Ranked Best result resolves to the current ranked baseline rather than a raw-damage bait build.
+
 ## Current-item pool reliability
 
 Pony now resolves completed items from the **current League client store dataset first**, rather than requiring Data Dragon's map flag on every record.

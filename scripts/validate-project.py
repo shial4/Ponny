@@ -17,6 +17,8 @@ required = [
     "assets/pony.svg",
     "data/manifest.json",
     ".github/workflows/validate.yml",
+    "tests/model.test.js",
+    "tests/static.test.py",
 ]
 
 for rel in required:
@@ -56,6 +58,14 @@ markers = [
     'Stormsurge',
     'api/versions.json',
     'raw.communitydragon.org/latest',
+    'runSmokeSuite',
+    'currentPrior()',
+    'Dusk and Dawn',
+    'SOLOQ_PRIORS',
+    'id="reasonPanel"',
+    'id="rankTabs"',
+    'id="goalChoices"',
+    'id="roleChoices"',
 ]
 for marker in markers:
     if marker not in html:

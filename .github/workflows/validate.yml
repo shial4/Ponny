@@ -27,3 +27,9 @@ jobs:
 
       - name: Validate static project
         run: python scripts/validate-project.py
+
+      - name: Validate recommendation model
+        run: node tests/model.test.js
+
+      - name: Validate UI/product invariants
+        run: python tests/static.test.py
