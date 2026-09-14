@@ -1,42 +1,22 @@
 # Pony testing
 
-## CI
+Required checks before deployment:
 
 ```bash
+node --check src/champion-engine.js
+node --check src/rune-engine.js
+node --check src/item-engine.js
+node tests/engine.test.js
+node tests/all-roster.test.js
 python scripts/validate-project.py
-node tests/model.test.js
-python tests/static.test.py
 ```
 
-## Deterministic browser fixture
+Regression requirements:
 
-Open:
-
-```text
-index.html?fixture=1
-```
-
-This avoids network data and renders a deterministic fixture roster.
-
-## Browser smoke suite
-
-Open:
-
-```text
-index.html?smoke=1
-```
-
-The page runs an internal smoke suite and sets:
-
-```text
-document.body.dataset.smoke = "pass"
-```
-
-when all checks succeed. The suite verifies:
-
-- champion picker is the initial view;
-- Ekko analysis returns rows;
-- Ranked Best uses Dark Harvest + Inspiration;
-- Ranked Best starts Dusk and Dawn → Shadowflame → Rabadon's Deathcap;
-- legacy/mode-specific items are absent;
-- Quick Trade still produces a valid alternative result set.
+- no `simulateGeneric()` function in production;
+- every selected champion must compile Passive + Q + W + E + R;
+- all-roster fixture must compile and simulate;
+- Qiyana assassin item fit must prefer a lethality/haste first item over Bloodthirster in the reference fixture;
+- invalid/legacy items must not enter the current Summoner's Rift candidate pool;
+- rune comparison keeps item path and target fixed;
+- Ranked Best and mathematical objectives stay distinct.

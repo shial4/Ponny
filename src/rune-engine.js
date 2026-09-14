@@ -1,0 +1,79 @@
+(function(global){
+'use strict';
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const levelScale=(l,a,b)=>a+(b-a)*((Math.max(1,l)-1)/17);
+function keystoneFit(name,f={},role='Jungle',goal='auto'){
+ let v=10;
+ switch(name){
+  case 'Electrocute':v=55*f.burst+18*f.execute+12*f.mobility;break;
+  case 'Dark Harvest':v=38*f.execute+28*f.burst+(role==='Jungle'?22:0);break;
+  case 'Hail of Blades':v=52*f.autos+18*f.burst;break;
+  case 'First Strike':v=30*f.burst+24*f.poke+16*f.mobility;break;
+  case 'Conqueror':v=55*f.extended+20*f.sustain+18*f.autos;break;
+  case 'Press the Attack':v=48*f.autos+25*f.extended;break;
+  case 'Lethal Tempo':v=65*f.autos+28*f.extended;break;
+  case 'Fleet Footwork':v=35*f.autos+32*f.sustain;break;
+  case 'Arcane Comet':v=48*f.poke+22*f.cc;break;
+  case 'Summon Aery':v=44*f.poke+18*f.sustain;break;
+  case 'Phase Rush':v=40*f.mobility+35*f.extended;break;
+  case 'Grasp of the Undying':v=55*f.tank+30*f.sustain+(role==='Top'?18:0);break;
+  case 'Aftershock':v=50*f.tank+45*f.cc;break;
+  case 'Guardian':v=45*f.sustain+35*f.tank+(role==='Support'?25:0);break;
+  case 'Glacial Augment':v=52*f.cc+(role==='Support'?20:0);break;
+ }
+ if(goal==='burst')v+=20*f.burst;
+ if(goal==='extended')v+=24*f.extended;
+ if(goal==='poke')v+=22*f.poke;
+ if(goal==='durability')v+=25*f.tank;
+ return v;
+}
+function minorFit(name,f={},role='Jungle',goal='auto'){
+ const n=String(name).toLowerCase();let v=10;
+ if(n.includes('sudden impact'))v+=28*f.mobility+20*f.burst;
+ if(n.includes('cheap shot'))v+=30*f.cc;
+ if(n.includes('taste of blood'))v+=26*f.sustain;
+ if(n.includes('treasure hunter'))v+=18*f.burst+(role==='Jungle'?12:0);
+ if(n.includes('ultimate hunter'))v+=18*f.burst+10*f.cc;
+ if(n.includes('relentless'))v+=20*f.mobility;
+ if(n.includes('scorch'))v+=28*f.poke+8*f.burst;
+ if(n.includes('absolute focus'))v+=22*f.burst+16*f.poke;
+ if(n.includes('transcendence'))v+=24*f.extended+10*f.poke;
+ if(n.includes('manaflow'))v+=20*f.poke;
+ if(n.includes('celerity'))v+=20*f.mobility;
+ if(n.includes('triumph'))v+=24*f.extended+12*f.sustain;
+ if(n.includes('presence of mind'))v+=22*f.extended+15*f.poke;
+ if(n.includes('alacrity'))v+=30*f.autos;
+ if(n.includes('haste'))v+=24*f.extended+12*f.burst;
+ if(n.includes('coup'))v+=22*f.execute;
+ if(n.includes('last stand'))v+=22*f.extended+15*f.sustain;
+ if(n.includes('bone plating'))v+=22*f.tank+10*f.burst;
+ if(n.includes('second wind'))v+=24*f.sustain;
+ if(n.includes('conditioning'))v+=24*f.tank;
+ if(n.includes('overgrowth'))v+=28*f.tank;
+ if(n.includes('revitalize'))v+=25*f.sustain;
+ if(n.includes('magical footwear'))v+=16*f.mobility+(role==='Jungle'?8:0);
+ if(n.includes('cosmic insight'))v+=18*f.mobility+12*f.burst;
+ if(n.includes('biscuit'))v+=18*f.sustain+10*f.poke;
+ return v;
+}
+function effectForPage(page,ctx={}){
+ const key=page?.key?.name||'';const ap=ctx.ap||0,totalAD=ctx.totalAD||0,bonusAD=ctx.bonusAD||0,level=ctx.level||12,features=ctx.features||{};
+ const out={magicDamage:0,physicalDamage:0,trueDamage:0,amp:0,attackSpeed:0,sustain:0};
+ if(key==='Electrocute')out.magicDamage=levelScale(level,70,240)+.05*ap+.10*bonusAD;
+ else if(key==='Dark Harvest')out.magicDamage=30+11*(ctx.dhSouls||10)+.05*ap+.10*bonusAD;
+ else if(key==='Hail of Blades'){out.attackSpeed=.90;out.trueDamage=2*(levelScale(level,2,20)+.10*ap)}
+ else if(key==='First Strike')out.amp=.07;
+ else if(key==='Arcane Comet')out.magicDamage=levelScale(level,30,130)+.05*ap+.05*bonusAD;
+ else if(key==='Summon Aery')out.magicDamage=levelScale(level,10,50)+.05*ap+.025*bonusAD;
+ else if(key==='Press the Attack')out.physicalDamage=levelScale(level,40,160);
+ else if(key==='Fleet Footwork')out.sustain=levelScale(level,10,100)+.05*ap;
+ else if(key==='Conqueror'){out.amp=.02+features.extended*.03;out.sustain=features.extended*35}
+ else if(key==='Grasp of the Undying'){out.magicDamage=(ctx.targetHp||1900)*.035;out.sustain=20}
+ const minors=[...(page?.primary||[]),...(page?.secondary||[])].map(x=>String(x?.name||'').toLowerCase());
+ if(minors.some(n=>n.includes('scorch')))out.magicDamage+=levelScale(level,20,40);
+ if(minors.some(n=>n.includes('cheap shot'))&&features.cc>.45)out.trueDamage+=levelScale(level,10,45);
+ if(minors.some(n=>n.includes('triumph')))out.sustain+=30*features.extended;
+ return out;
+}
+global.PonyRuneEngine={keystoneFit,minorFit,effectForPage};
+})(window);

@@ -60,17 +60,3 @@ for(const banned of ['Hextech Gunblade','Cruelty','Crown of the Shattered Queen'
   assert.equal(rows.flatMap(r=>r.path).includes(banned),false,`${banned} must not enter standard SR candidate tests`);
 }
 console.log('PASS legacy/mode-specific exclusions');
-
-function objectiveScoreRegression(row,max,mode){
- const s1=row.stage1/max.stage1,s2=row.stage2/max.stage2,s3=row.stage3/max.stage3,proc=row.proc/max.proc,rune=row.runeFit/max.runeFit,path=row.pathFit/max.pathFit;
- if(mode==='trade')return .22*s1+.30*s2+.10*s3+.22*proc+.06*rune+.10*path;
- if(mode==='burst')return .16*s1+.28*s2+.22*s3+.18*proc+.06*rune+.10*path;
-}
-const objectiveRowsFixture=[
- {name:'Lich Storm Raba',stage1:960,stage2:1370,stage3:1900,proc:1510,runeFit:160,pathFit:220},
- {name:'Lich Raba Void',stage1:960,stage2:1450,stage3:1960,proc:1480,runeFit:160,pathFit:30},
- {name:'Dusk Shadow Raba',stage1:900,stage2:1320,stage3:1800,proc:1300,runeFit:180,pathFit:70}
-];
-const objectiveMaxFixture={};for(const k of ['stage1','stage2','stage3','proc','runeFit','pathFit'])objectiveMaxFixture[k]=Math.max(...objectiveRowsFixture.map(x=>x[k]));
-for(const mode of ['trade','burst']){const sorted=objectiveRowsFixture.map(r=>({...r,score:objectiveScoreRegression(r,objectiveMaxFixture,mode)})).sort((a,b)=>b.score-a.score);assert.equal(sorted[0].name,'Lich Storm Raba',`${mode} should prefer Lich → Stormsurge → Rabadon`)}
-console.log('PASS objective weighting regression');

@@ -9,6 +9,9 @@
 <meta name="description" content="Pony is a League of Legends OTP build optimiser for rune pages and 1, 2 and 3 item power spikes.">
 <link rel="icon" type="image/svg+xml" href="./assets/pony.svg">
 <link rel="manifest" href="./site.webmanifest">
+<script src="./src/champion-engine.js"></script>
+<script src="./src/rune-engine.js"></script>
+<script src="./src/item-engine.js"></script>
 <style>
 :root{--bg:#07090d;--s:#0d1219;--s2:#101722;--line:#222d3a;--text:#eef5ff;--muted:#78899e;--accent:#76bbff;--green:#76d7a5;--gold:#dfbd73;--red:#d87e8e}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 60% -12%,rgba(30,112,114,.22),transparent 34rem),radial-gradient(circle at 8% 0,rgba(42,87,145,.14),transparent 31rem),var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -130,7 +133,9 @@ const FALLBACK = [{"id": "Aatrox", "name": "Aatrox", "tags": ["Fighter"]}, {"id"
 
 const RANKED_SOLO_QUEUE_ID=420;
 const state={
-  version:null, champions:[], selected:null, champDetail:null, communityChampion:null,
+  version:null, champions:[], selected:null,
+  champDetail:null, communityChampion:null, championBin:null, merakiChampion:null,
+  championModel:null, modelSummary:null,
   items:[], runeTrees:[], runeByName:new Map(), runeById:new Map(), itemByName:new Map(),
   rows:[], selectedRow:null,
   snapshot:null, dataMode:"fallback",
@@ -162,34 +167,6 @@ const ls=(l,a,b)=>a+(b-a)*((l-1)/17);
 const magic=(raw,mr,p=0,f=0)=>raw*100/(100+Math.max(0,mr*(1-p)-f));
 const phys=(raw,armor,p=0,f=0)=>raw*100/(100+Math.max(0,armor*(1-p)-f));
 const norm=s=>String(s||"").toLowerCase().replace(/[^a-z0-9]/g,"");
-
-const SPECIAL={
- Ekko:{
-  Jungle:{profile:"apAssassin",burst:.94,poke:.32,extended:.55,autos:.45,tank:.08,cc:.35,mobility:.96,engage:.92,sustain:.20,execute:.95,preferred:["Dark Harvest","Electrocute","First Strike","Hail of Blades"]},
-  Mid:{profile:"apAssassin",burst:.94,poke:.55,extended:.42,autos:.38,tank:.06,cc:.35,mobility:.96,engage:.90,sustain:.15,execute:.94,preferred:["Electrocute","Hail of Blades","First Strike","Dark Harvest"]}
- },
- Malphite:{
-  Top:{profile:"tank",burst:.48,poke:.72,extended:.48,autos:.20,tank:.92,cc:.95,mobility:.42,engage:.92,sustain:.44,execute:.22,preferred:["Grasp of the Undying","Arcane Comet","Summon Aery","First Strike"]},
-  Mid:{profile:"apBurst",burst:.96,poke:.82,extended:.18,autos:.08,tank:.35,cc:.95,mobility:.46,engage:.96,sustain:.12,execute:.72,preferred:["Arcane Comet","First Strike","Electrocute","Dark Harvest"]},
-  Support:{profile:"tankSupport",burst:.38,poke:.58,extended:.28,autos:.10,tank:.80,cc:.98,mobility:.36,engage:.95,sustain:.32,execute:.12,preferred:["Arcane Comet","Aftershock","Guardian","Glacial Augment"]}
- },
- DrMundo:{
-  Top:{profile:"tank",burst:.12,poke:.45,extended:.94,autos:.48,tank:.99,cc:.18,mobility:.22,engage:.38,sustain:1,execute:.40,preferred:["Grasp of the Undying","Fleet Footwork","Conqueror","Phase Rush"]},
-  Jungle:{profile:"tank",burst:.12,poke:.28,extended:.94,autos:.48,tank:.99,cc:.18,mobility:.24,engage:.42,sustain:1,execute:.40,preferred:["Fleet Footwork","Conqueror","Phase Rush","Grasp of the Undying"]}
- },
- Naafiri:{
-  Mid:{profile:"adAssassin",burst:.98,poke:.58,extended:.44,autos:.24,tank:.05,cc:.20,mobility:.84,engage:.94,sustain:.18,execute:.96,preferred:["Electrocute","First Strike","Dark Harvest","Conqueror"]},
-  Jungle:{profile:"adAssassin",burst:.94,poke:.25,extended:.52,autos:.28,tank:.05,cc:.20,mobility:.87,engage:.94,sustain:.20,execute:.96,preferred:["Dark Harvest","Electrocute","First Strike","Conqueror"]}
- },
- Ahri:{
-  Mid:{profile:"apAssassin",burst:.82,poke:.82,extended:.38,autos:.18,tank:.05,cc:.78,mobility:.94,engage:.86,sustain:.18,execute:.65,preferred:["Electrocute","Summon Aery","Arcane Comet","First Strike"]}
- },
- Qiyana:{
-  Mid:{profile:"adAssassin",burst:1,poke:.40,extended:.30,autos:.28,tank:.03,cc:.72,mobility:.98,engage:.98,sustain:.08,execute:.94,preferred:["Electrocute","First Strike","Dark Harvest","Conqueror"]},
-  Jungle:{profile:"adAssassin",burst:.96,poke:.20,extended:.36,autos:.28,tank:.03,cc:.72,mobility:.98,engage:.98,sustain:.08,execute:.94,preferred:["Dark Harvest","Electrocute","First Strike","Conqueror"]}
- }
-};
-
 
 const ROLE_OPTIONS=["Jungle","Mid","Top","ADC","Support"];
 const GOAL_OPTIONS=[{value:"auto",label:"Ranked best",hint:"Best default setup"},{value:"burst",label:"Max burst",hint:"One-shot damage"},{value:"trade",label:"Quick trade",hint:"Proc and leave"},{value:"extended",label:"Extended",hint:"Longer fights"},{value:"durability",label:"Tank / MR",hint:"Harder targets"},{value:"poke",label:"Poke",hint:"Repeated range"}];
@@ -233,36 +210,26 @@ async function chooseChampion(id){
 }
 function role(){return $("role").value}
 
-function fallbackSignals(c,r){
- const tags=(c.tags||[]).map(x=>x.toLowerCase());
- const assassin=tags.includes("assassin"),mage=tags.includes("mage"),marksman=tags.includes("marksman"),tank=tags.includes("tank"),fighter=tags.includes("fighter"),support=tags.includes("support");
- let profile=assassin?(mage?"apAssassin":"adAssassin"):marksman?"marksman":tank?"tank":mage?"apCaster":support?"support":"fighter";
- if(r==="Support"&&tank)profile="tankSupport";
- return {
-  profile, burst:assassin?.88:mage?.68:marksman?.55:fighter?.48:.28,
-  poke:mage?.70:marksman?.48:.30, extended:fighter?.82:marksman?.82:tank?.72:.35,
-  autos:marksman?.98:fighter?.62:.20,tank:tank?.95:fighter?.45:.10,cc:tank?.72:support?.72:mage?.42:.22,
-  mobility:assassin?.86:fighter?.50:.30,engage:assassin?.85:tank?.68:.46,sustain:tank?.70:fighter?.58:.22,
-  execute:assassin?.88:.35,preferred:[]
- };
-}
 function signals(){
- const c=state.selected,r=role(),special=SPECIAL[c.id]?.[r]||SPECIAL[c.name]?.[r];
- let s=special?{...special}:fallbackSignals(c,r);
- const d=state.champDetail;
- const cd=state.communityChampion;
- if(d || cd){
-  const riotText=d ? [d.passive?.description,...(d.spells||[]).map(x=>x.description+" "+x.tooltip)].join(" ") : "";
-  const clientText=cd ? JSON.stringify(cd) : "";
-  const txt=(riotText+" "+clientText).toLowerCase();
-  if(/stun|root|knock|taunt|fear|charm|immobil/.test(txt))s.cc=Math.max(s.cc,.75);
-  if(/dash|blink|leap|teleport/.test(txt))s.mobility=Math.max(s.mobility,.70);
-  if(/heal|heals|restore health|regener/.test(txt))s.sustain=Math.max(s.sustain,.65);
-  if(/shield/.test(txt)&&r==="Support")s.sustain=Math.max(s.sustain,.58);
-  const range=d?.stats?.attackrange||cd?.attackRange||cd?.attackrange||125;
-  if(range>=475)s.autos=Math.max(s.autos,.50);
+ const f=state.championModel?.features;
+ if(!f){
+  return {profile:"uncompiled",burst:.45,poke:.35,extended:.45,autos:.35,tank:.25,cc:.25,mobility:.35,sustain:.25,execute:.25,preferred:[]};
  }
- return s;
+ const burst=clamp(.34+.26*f.execute+.20*f.mobility+.12*Math.max(f.apShare,f.adShare),0,1);
+ const extended=clamp(.18+.38*f.autoReliance+.24*f.sustain+.10*(1-f.execute),0,1);
+ return {
+  profile:f.apShare>=.58?"ability-power":f.adShare>=.58?"attack-damage":"hybrid",
+  burst,
+  poke:f.poke,
+  extended,
+  autos:f.autoReliance,
+  tank:clamp(f.sustain*.58+f.cc*.18,0,1),
+  cc:f.cc,
+  mobility:f.mobility,
+  sustain:f.sustain,
+  execute:f.execute,
+  preferred:[]
+ };
 }
 function autoGoal(s){
  if(s.tank>.8)return "durability";
@@ -274,63 +241,14 @@ function autoGoal(s){
 function goal(){const g=$("goal").value;return g==="auto"?autoGoal(signals()):g}
 
 function keystoneScore(name,s,g){
- let v=0;
- const r=role();
- switch(name){
-  case "Electrocute": v=46*s.burst+14*s.engage+10*s.execute+(g==="burst"?25:0);break;
-  case "Dark Harvest": v=34*s.execute+25*s.burst+(r==="Jungle"?20:0)+(g==="burst"?10:0);break;
-  case "Hail of Blades": v=42*s.autos+20*s.burst+10*s.engage;break;
-  case "First Strike": v=30*s.burst+22*s.engage+15*s.poke+(g==="burst"?10:0);break;
-  case "Summon Aery": v=34*s.poke+14*s.sustain+(r==="Support"?18:0);break;
-  case "Arcane Comet": v=40*s.poke+18*s.cc+(g==="poke"?18:0);break;
-  case "Phase Rush": v=25*s.mobility+28*s.extended+8*s.engage;break;
-  case "Press the Attack": v=44*s.autos+20*s.extended+6*s.burst;break;
-  case "Lethal Tempo": v=55*s.autos+30*s.extended+(g==="extended"?15:0);break;
-  case "Fleet Footwork": v=28*s.autos+26*s.sustain+10*s.mobility;break;
-  case "Conqueror": v=48*s.extended+22*s.sustain+8*s.burst+(g==="extended"?18:0);break;
-  case "Grasp of the Undying": v=45*s.tank+32*s.sustain+18*s.extended+(r==="Top"?18:0)+(g==="durability"?20:0);break;
-  case "Aftershock": v=50*s.tank+40*s.cc+18*s.engage+(r==="Support"||r==="Jungle"?14:0);break;
-  case "Guardian": v=55*(r==="Support"?1:0)+28*s.sustain+18*s.tank;break;
-  case "Glacial Augment": v=44*s.cc+30*(r==="Support"?1:0)+12*s.engage;break;
-  default: v=10;
- }
- const preferred=s.preferred||[];
- const ix=preferred.indexOf(name); if(ix>=0)v+=40-ix*8;
- // Empirical priors must be queueId 420 only. CommunityDragon recommendations are not queue-filtered, so they are intentionally excluded.
- return v;
+ const engine=window.PonyRuneEngine;
+ if(!engine||!state.championModel)return 10;
+ return engine.keystoneFit(name,state.championModel.features,role(),g);
 }
 function minorScore(name,s,g,r){
- const n=name.toLowerCase();let v=10;
- if(n.includes("sudden impact"))v+=24*s.mobility+20*s.burst;
- if(n.includes("cheap shot"))v+=28*s.cc;
- if(n.includes("taste of blood"))v+=20*s.sustain+8*(r==="Mid"||r==="Top");
- if(n.includes("treasure hunter"))v+=18*s.burst+12*(r==="Jungle");
- if(n.includes("ultimate hunter"))v+=14*s.burst+12*s.engage;
- if(n.includes("relentless"))v+=15*s.mobility+8*(r==="Jungle");
- if(n.includes("scorch"))v+=24*s.poke+8*s.burst;
- if(n.includes("absolute focus"))v+=18*s.burst+14*s.poke;
- if(n.includes("gathering storm"))v+=15+(g==="extended"?5:0);
- if(n.includes("transcendence"))v+=18*s.extended+8*s.poke;
- if(n.includes("manaflow"))v+=18*s.poke;
- if(n.includes("celerity"))v+=16*s.mobility;
- if(n.includes("triumph"))v+=16*s.extended+10*s.engage;
- if(n.includes("presence of mind"))v+=18*s.poke+10*s.extended;
- if(n.includes("legend")&&n.includes("alacrity"))v+=24*s.autos;
- if(n.includes("legend")&&n.includes("haste"))v+=18*s.extended+8*s.burst;
- if(n.includes("coup"))v+=20*s.execute;
- if(n.includes("cut down"))v+=10*s.poke+8*s.burst;
- if(n.includes("last stand"))v+=20*s.sustain+14*s.extended;
- if(n.includes("demolish"))v+=12*(r==="Top")+8*s.tank;
- if(n.includes("bone plating"))v+=20*(r==="Top"||r==="Mid")+12*s.tank;
- if(n.includes("second wind"))v+=22*s.sustain+10*(r==="Top");
- if(n.includes("conditioning"))v+=18*s.tank;
- if(n.includes("overgrowth"))v+=24*s.tank;
- if(n.includes("revitalize"))v+=20*s.sustain;
- if(n.includes("magical footwear"))v+=14*s.mobility+30*(r==="Jungle");
- if(n.includes("cosmic insight"))v+=16*s.engage+30*(r==="Jungle");
- if(n.includes("triple tonic"))v+=12;
- if(n.includes("biscuit"))v+=18*s.sustain+8*s.poke;
- return v;
+ const engine=window.PonyRuneEngine;
+ if(!engine||!state.championModel)return 10;
+ return engine.minorFit(name,state.championModel.features,r,g);
 }
 function fallbackRunes(){
  return [
@@ -415,28 +333,6 @@ function runePageHTML(p,mini=false){
  p.secondary.map(x=>`<div class="runeBox">${runeNode(x)}<div class="runeLabel">${x.name}</div></div>`).join("");
 }
 
-function parseStat(item,key){return item.stats?.[key]||0}
-function itemSignalsScore(i,s,g){
- const st=i.stats||{},desc=(i.description||"").toLowerCase(),tags=(i.tags||[]).map(x=>x.toLowerCase());
- const ap=parseStat(i,"FlatMagicDamageMod"),ad=parseStat(i,"FlatPhysicalDamageMod"),hp=parseStat(i,"FlatHPPoolMod"),armor=parseStat(i,"FlatArmorMod"),mr=parseStat(i,"FlatSpellBlockMod"),as=parseStat(i,"PercentAttackSpeedMod"),crit=parseStat(i,"FlatCritChanceMod"),ms=parseStat(i,"PercentMovementSpeedMod");
- let v=0;
- const p=s.profile;
- if(/ap/.test(p)||p==="tankSupport")v+=ap*(s.burst*1.1+s.poke*.7+s.extended*.4);
- if(/ad/.test(p)||p==="marksman"||p==="fighter")v+=ad*(s.burst*1.0+s.extended*.8+s.autos*.5);
- v+=hp*(s.tank*.11+s.sustain*.035)+armor*s.tank*1.4+mr*s.tank*1.3+as*110*s.autos+crit*120*s.autos+ms*700*s.mobility;
- if(desc.includes("magic penetration"))v+=42*(s.burst+s.poke);
- if(desc.includes("lethality"))v+=42*s.burst;
- if(desc.includes("armor penetration"))v+=35*(s.burst+s.extended);
- if(desc.includes("spellblade"))v+=32*(s.burst+s.autos*.5);
- if(desc.includes("shield"))v+=22*s.sustain+20*s.tank;
- if(desc.includes("heal"))v+=18*s.sustain;
- if(desc.includes("move speed"))v+=16*s.mobility;
- if(desc.includes("critical strike"))v+=18*s.autos;
- if(g==="durability")v+=hp*.12+(armor+mr)*1.8;
- if(g==="extended")v+=as*150+hp*.05;
- if(g==="burst")v+=(ap+ad)*.35+(desc.includes("penetration")?20:0);
- return v;
-}
 function fallbackItems(){
  const basic=[
  ["Lich Bane",2900,100,0,0,0],["Dusk and Dawn",3100,60,0,300,.2],["Nashor's Tooth",2900,80,0,0,.5],["Stormsurge",2800,90,0,0,0],["Shadowflame",3200,110,0,0,0],["Rabadon's Deathcap",3500,130,0,0,0],["Void Staff",3000,95,0,0,0],["Hextech Rocketbelt",2650,60,0,350,0],
@@ -508,27 +404,38 @@ function currentCompletedItems(){
 }
 
 function candidateItems(){
- const s=signals(),g=goal();
+ const model=state.championModel;
+ if(!model)throw new Error("Champion mechanics are not compiled yet");
+ const objective=goal(),targetMR=+$("targetMr").value;
  let xs=currentCompletedItems();
- xs=xs.map(i=>({...i,_fit:itemSignalsScore(i,s,g)})).sort((a,b)=>b._fit-a._fit);
 
- if(state.selected.id==="Ekko"){
-  const wanted=new Set([
-   "Lich Bane","Dusk and Dawn","Dusk & Dawn","Nashor's Tooth",
-   "Stormsurge","Shadowflame","Rabadon's Deathcap","Void Staff",
-   "Hextech Rocketbelt","Zhonya's Hourglass"
-  ]);
-  let preferred=xs.filter(x=>wanted.has(x.name));
+ xs=xs.map(item=>{
+  const baseFit=window.PonyItemEngine.compatibility(item,model,objective,role());
+  const orderFit=window.PonyItemEngine.pathOrderScore([item],model,objective,targetMR);
+  let simFit=0;
+  try{
+   const ctx=stageCtx(1),stats=window.PonyItemEngine.aggregate([item]);
+   const sim=window.PonyChampionEngine.simulateChampion({
+    model,itemStats:stats,runeEffects:{},level:ctx.level,
+    target:{maxHealth:ctx.hp,currentHealth:ctx.hp,armor:ctx.armor,magicResist:ctx.mr},
+    objective,role:role()
+   });
+   simFit=sim.performance/25;
+  }catch{}
+  return {...item,_fit:baseFit+orderFit+simFit};
+ }).sort((a,b)=>b._fit-a._fit);
 
-  if(preferred.length<3){
-   const safeFallback=fallbackItems().filter(x=>wanted.has(x.name));
-   for(const f of safeFallback){
-    if(!preferred.some(x=>x.name===f.name))preferred.push(f);
-   }
+ // Always include verified queue-420 baseline items so Ranked Best can compare them,
+ // even when raw first-item math would prune one before the expensive search.
+ const prior=currentPrior();
+ const keep=xs.slice(0,+$("itemDepth").value);
+ if(prior?.items?.length){
+  for(const name of prior.items){
+   const found=xs.find(x=>itemNameMatches(x.name,name));
+   if(found&&!keep.includes(found))keep.push(found);
   }
-  xs=preferred;
  }
- return xs.slice(0,+$("itemDepth").value);
+ return keep;
 }
 function itemUrl(i){
  if(i?.image?.full)return `https://ddragon.leagueoflegends.com/cdn/${state.version}/img/item/${i.image.full}`;
@@ -550,86 +457,12 @@ function pathHTML(path,mini=false){
 function perms(arr,k){const out=[];function f(c,l){if(c.length===k){out.push(c.slice());return}for(let i=0;i<l.length;i++)f(c.concat(l[i]),l.slice(0,i).concat(l.slice(i+1)))}f([],arr);return out}
 function stageCtx(n){const hp=+$("targetHp").value,mr=+$("targetMr").value,ar=+$("targetArmor").value;if(n===1)return{level:9,hp:Math.round(hp*.84),mr:Math.max(0,mr-5),armor:Math.max(0,ar-12)};if(n===2)return{level:12,hp,mr,armor:ar};return{level:15,hp:Math.round(hp*1.16),mr:mr+5,armor:ar+12}}
 
-function aggregate(path,p,ctx){
- let ap=0,ad=0,hp=0,armor=0,mr=0,as=0,crit=0,gold=0,flatM=0,pctM=0,lethality=0,pctA=0;
- for(const i of path){
-  const st=i.stats||{};ap+=st.FlatMagicDamageMod||0;ad+=st.FlatPhysicalDamageMod||0;hp+=st.FlatHPPoolMod||0;armor+=st.FlatArmorMod||0;mr+=st.FlatSpellBlockMod||0;as+=st.PercentAttackSpeedMod||0;crit+=st.FlatCritChanceMod||0;gold+=i.gold?.total||0;
-  const d=(i.description||"").toLowerCase();
-  const pen=d.match(/(\d+)\s*magic penetration/);if(pen)flatM+=+pen[1];
-  const leth=d.match(/(\d+)\s*lethality/);if(leth)lethality+=+leth[1];
-  if(d.includes("% magic penetration"))pctM=Math.max(pctM,.35);
-  if(d.includes("% armor penetration"))pctA=Math.max(pctA,.30);
- }
- const names=new Set(path.map(i=>i.name));
- if(names.has("Rabadon's Deathcap"))ap*=1.30;
- if(names.has("Void Staff"))pctM=Math.max(pctM,.40);
- return{ap,ad,hp,armor,mr,as,crit,gold,flatM,pctM,lethality,pctA};
+function aggregate(path){
+ const st=window.PonyItemEngine.aggregate(path);
+ return {...st,flatM:st.flatMagicPen,pctM:st.pctMagicPen,pctA:st.pctArmorPen};
 }
-function runeDamage(page,ctx,stats,s){
- const k=page.key.name,ap=stats.ap;
- if(k==="Electrocute")return magic(ls(ctx.level,70,240)+.05*ap,ctx.mr);
- if(k==="Dark Harvest")return magic(30+11*(+$("dhSouls").value)+.05*ap,ctx.mr);
- if(k==="Hail of Blades")return 2*(ls(ctx.level,2,20)+.10*ap);
- if(k==="First Strike")return 0; // handled as amplifier
- if(k==="Arcane Comet")return magic(ls(ctx.level,30,130)+.05*ap,ctx.mr)*(0.55+0.4*s.cc);
- if(k==="Summon Aery")return magic(ls(ctx.level,10,50)+.05*ap,ctx.mr);
- if(k==="Press the Attack")return phys(ls(ctx.level,40,160),ctx.armor);
- if(k==="Grasp of the Undying")return magic(ctx.hp*.035,ctx.mr);
- return 0;
-}
-function minorDamage(page,ctx,stats,s){
- let d=0,names=[...page.primary,...page.secondary].map(x=>x.name);
- if(names.includes("Sudden Impact"))d+=ls(ctx.level,20,80);
- if(names.includes("Cheap Shot")&&s.cc>.45)d+=ls(ctx.level,10,45);
- if(names.includes("Scorch"))d+=magic(ls(ctx.level,20,40),ctx.mr);
- return d;
-}
-function simulateGeneric(path,page,stage){
- const ctx=stageCtx(stage),s=signals(),g=goal(),st=aggregate(path,page,ctx),baseAD=60+3*(ctx.level-1),tad=baseAD+st.ad;
- let rawM=0,rawP=0;
- const p=s.profile;
- if(p==="apAssassin"||p==="apBurst") {rawM=250+ctx.level*18+1.95*st.ap;rawP=baseAD*1.45}
- else if(p==="apCaster"){rawM=300+ctx.level*20+2.25*st.ap;rawP=baseAD*.70}
- else if(p==="adAssassin"){rawP=300+ctx.level*20+2.05*tad}
- else if(p==="marksman"){rawP=180+ctx.level*12+2.15*tad+230*st.as+180*st.crit}
- else if(p==="tankSupport"){rawM=130+ctx.level*10+.75*st.ap;rawP=baseAD*.7}
- else if(p==="tank"){rawM=80+ctx.level*8+.25*st.ap;rawP=150+ctx.level*12+1.10*tad+.035*st.hp}
- else {rawP=240+ctx.level*17+1.65*tad+110*st.as}
- let damage=magic(rawM,ctx.mr,st.pctM,12+st.flatM)+phys(rawP,ctx.armor,st.pctA,st.lethality);
- damage+=runeDamage(page,ctx,st,s)+minorDamage(page,ctx,st,s);
- if(page.key.name==="First Strike")damage*=1.07;
- let atProc=damage*(p==="adAssassin"||p==="apAssassin"||p==="apBurst"?.82:.72);
- const durability=st.hp*.42+st.armor*10+st.mr*10;
- const sustainValue=s.sustain*220*(1+stage*.12);
- const mobilityValue=s.mobility*90;
- const utility=s.cc*160+(role()==="Support"?s.sustain*180:0);
- let performance;
- if(g==="burst")performance=damage+durability*.10+mobilityValue;
- else if(g==="poke")performance=damage*.88+s.poke*240+durability*.13;
- else if(g==="extended")performance=damage*.80+durability*.26+sustainValue+st.as*170;
- else if(g==="durability")performance=damage*.42+durability*.72+sustainValue+utility;
- else performance=damage*.78+durability*.18+utility*.25+mobilityValue;
- return {performance,damage,atProc,gold:st.gold,eff:performance/Math.max(1,st.gold)*1000};
-}
-function simulateEkko(path,page,stage){
- const ctx=stageCtx(stage),st=aggregate(path,page,ctx),ap=st.ap,baseAD=58+3*(ctx.level-1);
- const names=new Set(path.map(x=>x.name)),has=n=>names.has(n),dusk=has("Dusk & Dawn")||has("Dusk and Dawn");
- let hp=ctx.hp,total=0;
- const md=raw=>{let d=magic(raw,ctx.mr,st.pctM,12+st.flatM);if(has("Shadowflame")&&hp<ctx.hp*.40)d*=1.20;hp-=d;total+=d;return d};
- const pd=raw=>{const d=phys(raw,ctx.armor);hp-=d;total+=d;return d};
- md(140+.30*ap);pd(baseAD);md((ctx.level>=13?150:ctx.level>=11?125:75)+.40*ap);
- if(has("Lich Bane"))md(.75*baseAD+.45*ap);
- if(has("Nashor's Tooth"))md(15+.15*ap);
- if(dusk)md(.75*baseAD+.10*ap);else pd(baseAD);
- md(ls(ctx.level,30,150)+.80*ap);
- let rune=runeDamage(page,ctx,st,signals())+minorDamage(page,ctx,st,signals());hp-=rune;total+=rune;
- const atProc=total;
- md(140+.70*ap);
- if(has("Stormsurge")&&atProc>=ctx.hp*.25)md(125+.10*ap);
- if(page.key.name==="First Strike"){const bonus=total*.07;hp-=bonus;total+=bonus}
- const perf=total+signals().mobility*80;
- return {performance:perf,damage:total,atProc,gold:st.gold,eff:perf/st.gold*1000};
-}
+
+
 function ekkoPathPrior(path){
  if(state.selected?.id!=="Ekko")return 0;const n=path.map(x=>x.name),mr=+$("targetMr").value,mode=$("goal").value;let s=0;const first=n[0];
  if(mode==="auto"){if(itemNameMatches(first,"Dusk and Dawn"))s+=70;else if(first==="Lich Bane")s+=26;else if(first==="Hextech Rocketbelt")s+=14;else if(first==="Nashor's Tooth")s+=8;else s-=18}
@@ -649,21 +482,70 @@ function ekkoPathPrior(path){
  }else{if(n[1]==="Stormsurge")s+=38;if(n[1]==="Shadowflame")s+=28;if(n[2]==="Rabadon's Deathcap")s+=38}
  if(n[1]==="Void Staff")s+=(mr>=70?28:-35);if(n[2]==="Void Staff")s+=(mr>=60?30:-8);if(first==="Rabadon's Deathcap"||first==="Void Staff"||first==="Zhonya's Hourglass")s-=100;return s
 }
-function simulate(path,page,stage){return state.selected.id==="Ekko"?simulateEkko(path,page,stage):simulateGeneric(path,page,stage)}
+
+function pathOrderPrior(path){
+ if(!state.championModel)return 0;
+ const generic=window.PonyItemEngine.pathOrderScore(path,state.championModel,goal(),+$("targetMr").value);
+ // Ekko keeps one explicit interaction prior because Lich/Storm and Dusk/passive timing
+ // are known order-sensitive interactions; every champion still uses the compiled mechanics engine.
+ return generic+ekkoPathPrior(path);
+}
+
+function simulate(path,page,stage){
+ if(!state.championModel)throw new Error(`No compiled mechanics model for ${state.selected?.name||"champion"}`);
+ const ctx=stageCtx(stage);
+ const itemStats=window.PonyItemEngine.aggregate(path);
+ const base=window.PonyChampionEngine.getChampionBaseStats(state.championModel.ddragon,state.championModel.meraki,ctx.level);
+ const runeEffects=window.PonyRuneEngine.effectForPage(page,{
+  level:ctx.level,
+  ap:itemStats.ap,
+  totalAD:base.totalAD+itemStats.ad,
+  bonusAD:itemStats.ad,
+  targetHp:ctx.hp,
+  features:state.championModel.features,
+  objective:goal(),
+  dhSouls:+$("dhSouls").value
+ });
+ const result=window.PonyChampionEngine.simulateChampion({
+  model:state.championModel,
+  itemStats,
+  runeEffects,
+  level:ctx.level,
+  target:{maxHealth:ctx.hp,currentHealth:ctx.hp,armor:ctx.armor,magicResist:ctx.mr},
+  objective:goal(),
+  role:role()
+ });
+ return {...result,gold:itemStats.gold,eff:itemStats.gold?result.performance/itemStats.gold*1000:0};
+}
 
 function generateRows(){
  const pages=generateRunePages(),items=candidateItems(),paths=perms(items,3),rows=[];
  for(const p of pages)for(const path of paths){
-  if(state.selected.id==="Ekko"){
-   const names=path.map(x=>x.name);
-   if(names.includes("Lich Bane")&&(names.includes("Dusk & Dawn")||names.includes("Dusk and Dawn")))continue;
-   if(["Rabadon's Deathcap","Void Staff","Zhonya's Hourglass"].includes(names[0]))continue;
-  }
-  const a=simulate([path[0]],p,1),b=simulate(path.slice(0,2),p,2),c=simulate(path,p,3),pathFit=ekkoPathPrior(path),metaFit=soloQPriorScore(p,path);
-  rows.push({page:p,path,s1:a,s2:b,s3:c,stage1:a.performance,stage2:b.performance,stage3:c.performance,proc:c.atProc,efficiency:c.eff,runeFit:p.fit,pathFit,metaFit});
+  const names=path.map(x=>x.name);
+  // Mutually exclusive Spellblade-family purchases should never be compared as legal paths.
+  if(names.includes("Lich Bane")&&(names.includes("Dusk & Dawn")||names.includes("Dusk and Dawn")))continue;
+
+  const a=simulate([path[0]],p,1);
+  const b=simulate(path.slice(0,2),p,2);
+  const c=simulate(path,p,3);
+  const pathFit=pathOrderPrior(path);
+  const metaFit=soloQPriorScore(p,path);
+  rows.push({
+   page:p,path,s1:a,s2:b,s3:c,
+   stage1:a.performance,stage2:b.performance,stage3:c.performance,
+   proc:c.atProc,efficiency:c.eff,runeFit:p.fit,pathFit,metaFit
+  });
  }
  if(!rows.length)return[];
- const max={stage1:Math.max(...rows.map(x=>x.stage1)),stage2:Math.max(...rows.map(x=>x.stage2)),stage3:Math.max(...rows.map(x=>x.stage3)),proc:Math.max(...rows.map(x=>x.proc)),runeFit:Math.max(...rows.map(x=>x.runeFit)),pathFit:Math.max(1,...rows.map(x=>Math.max(0,x.pathFit))),metaFit:Math.max(1,...rows.map(x=>Math.max(0,x.metaFit)))};
+ const max={
+  stage1:Math.max(...rows.map(x=>x.stage1)),
+  stage2:Math.max(...rows.map(x=>x.stage2)),
+  stage3:Math.max(...rows.map(x=>x.stage3)),
+  proc:Math.max(...rows.map(x=>x.proc)),
+  runeFit:Math.max(...rows.map(x=>x.runeFit)),
+  pathFit:Math.max(1,...rows.map(x=>Math.max(0,x.pathFit))),
+  metaFit:Math.max(1,...rows.map(x=>Math.max(0,x.metaFit)))
+ };
  const rankedBest=$("goal").value==="auto"&&currentPrior();
  const mode=$("goal").value;
  rows.forEach(x=>{
@@ -679,22 +561,40 @@ function generateRows(){
   else score=.18*s1+.27*s2+.31*s3+.07*proc+.12*rune+.05*path;
   x.overall=100*score;
  });
- for(const k of ["stage1","stage2","stage3"])[...rows].sort((a,b)=>b[k]-a[k]).forEach((x,i)=>x["rank"+k.slice(-1)]=i+1);
+ for(const k of ["stage1","stage2","stage3"]){
+  [...rows].sort((a,b)=>b[k]-a[k]).forEach((x,i)=>x["rank"+k.slice(-1)]=i+1);
+ }
  return rows;
 }
 function sortVal(x,k){return x[k]??x.overall}
 function renderChampion(){
- const c=state.selected,exact=c.id==="Ekko",url=c.image?.full?`https://ddragon.leagueoflegends.com/cdn/${state.version}/img/champion/${c.image.full}`:"";
+ const c=state.selected,model=state.championModel,url=c.image?.full?`https://ddragon.leagueoflegends.com/cdn/${state.version}/img/champion/${c.image.full}`:"";
  $("portraitHolder").innerHTML=url?`<img class="portrait" src="${url}" onerror="this.outerHTML='<div class=&quot;portraitFallback&quot;>${initials(c.name)}</div>'">`:`<div class="portraitFallback">${initials(c.name)}</div>`;
- $("champName").textContent=c.name;$("champMeta").textContent=(c.tags||[]).join(" · ");
- $("confidence").textContent=exact?"Exact Ekko model":"Adaptive champion model";$("confidence").className="badge "+(exact?"exact":"adaptive");
- const s=signals();renderChoiceControls();
- $("note").innerHTML=exact?`<strong>Ekko exact adapter:</strong> Ranked Best uses a current-patch SoloQ baseline when available, then the exact Q/E/passive quick-exit simulation scores power spikes and build order. Burst and Quick Trade intentionally explore mathematical alternatives.`
- : `<strong>${c.name} · ${role()}:</strong> Pony uses current Riot items/runes and role-specific champion mechanics. When a queue-420 current-patch baseline is available it anchors Ranked Best; otherwise the result is clearly labelled as a model recommendation.`;
- $("modelTitle").textContent=exact?"Ekko · exact quick-exit model":`${c.name} · adaptive ${signals().profile} model`;
- $("combo").textContent=exact?"Q1 → E2 → AA → Passive → leave → Q2":`${goal()} model · damage + durability + utility + rune fit`;
- $("modelNotes").textContent=exact?"Runes are no longer fixed: Jungle and Mid can produce different pages. Overall ranking combines each power spike with rune fit."
- :"This is designed to find a champion/role sweet spot rather than reuse one generic assassin page. The engine considers every loaded keystone and completed item in a first-pass fit score, then performs the expensive combinatorial simulation on the strongest candidates.";
+ $("champName").textContent=c.name;
+ $("champMeta").textContent=(c.tags||[]).join(" · ");
+ renderChoiceControls();
+
+ if(!model){
+  $("confidence").textContent="Compiling mechanics";
+  $("confidence").className="badge adaptive";
+  return;
+ }
+
+ const coverage=Math.round((model.coverage||0)*100);
+ $("confidence").textContent=`Mechanics ${coverage}%`;
+ $("confidence").className="badge "+(coverage>=80?"exact":"adaptive");
+
+ const summary=window.PonyChampionEngine.modelSummary(
+  model,goal(),12,{},
+  {maxHealth:+$("targetHp").value,armor:+$("targetArmor").value,magicResist:+$("targetMr").value}
+ );
+ state.modelSummary=summary;
+ const sources=[`P:${summary.passiveSource}`,...Object.entries(summary.abilitySources).map(([k,v])=>`${k}:${v}`)].join(" · ");
+
+ $("note").innerHTML=`<strong>${c.name} · ${role()}:</strong> Pony compiled this recommendation from the champion’s actual passive and Q/W/E/R mechanics. <span class="source">${model.sourceLabel}</span> · coverage ${coverage}%. No generic assassin/mage/fighter damage formula is used.`;
+ $("modelTitle").textContent=`${c.name} · compiled combat model`;
+ $("combo").textContent=summary.comboLabel||"Objective-specific rotation";
+ $("modelNotes").textContent=`Ability sources: ${sources}. Rank priority: ${summary.rankPriority.join(" → ")}. Items and every legal rune page are evaluated against this compiled model for ${GOAL_OPTIONS.find(x=>x.value===$("goal").value)?.label||"the selected objective"}.`;
 }
 function runeComparisonForRow(row){
  if(!row)return[];const scored=bestRuneVariantPages().map(page=>{const sim=simulate(row.path,page,3),metric=$("goal").value==="trade"?sim.atProc:sim.performance;return{page,sim,metric}}).sort((a,b)=>b.metric-a.metric);
@@ -879,18 +779,97 @@ function refreshClientRecommendationPrior(){
  for(const n of nodes)collectKnownRuneIds(n,state.recommendedPerkIds);
 }
 
+
+function fixtureChampionDetail(c){
+ const isAP=(c.tags||[]).includes("Mage");
+ const coeff=isAP?"spelldamage":"bonusattackdamage";
+ const vars=[{key:coeff,link:coeff,coeff:[.65]}];
+ const scalingText=isAP?"Scales with Ability Power.":"Scales with bonus Attack Damage.";
+ const spell=(name,base,range)=>({name,description:`${name} deals damage. ${scalingText}`,tooltip:`Deals damage. ${scalingText}`,effectBurn:[null,[base,base+25,base+50,base+75,base+100]],vars,rangeBurn:[String(range)],cooldownBurn:["8","7","6","5","4"],maxrank:5});
+ return {
+  id:c.id,key:c.key||"245",name:c.name,tags:c.tags||[],stats:{
+   hp:620,hpperlevel:105,mp:350,mpperlevel:45,movespeed:340,armor:30,armorperlevel:4.5,
+   spellblock:32,spellblockperlevel:2.05,attackrange:(c.tags||[]).includes("Marksman")?550:175,
+   attackdamage:62,attackdamageperlevel:3.5,attackspeed:0.67,attackspeedperlevel:3
+  },
+  passive:{name:"Passive",description:"Damaging champions with abilities can trigger the passive after repeated hits."},
+  spells:[spell("Q",80,700),spell("W",65,450),spell("E",90,450),{...spell("R",175,650),maxrank:3}]
+ };
+}
+async function compileSelectedChampionModel(){
+ const engine=window.PonyChampionEngine;
+ if(!engine)throw new Error("Champion mechanics engine failed to load");
+ state.championModel=engine.compileChampion({
+  summary:state.selected,
+  ddragon:state.champDetail,
+  cdragon:state.communityChampion,
+  bin:state.championBin,
+  meraki:state.merakiChampion,
+  role:role()
+ });
+ state.modelSummary=engine.modelSummary(
+  state.championModel,
+  goal(),
+  12,
+  {},
+  {maxHealth:+$("targetHp").value,armor:+$("targetArmor").value,magicResist:+$("targetMr").value}
+ );
+ if(!state.championModel?.spells?.Q||!state.championModel?.spells?.W||!state.championModel?.spells?.E||!state.championModel?.spells?.R){
+  throw new Error(`Incomplete Q/W/E/R model for ${state.selected.name}`);
+ }
+}
+
 async function selectChampion(){
  state.selected=state.champions.find(x=>x.id===$("champion").value)||state.champions[0];
  if(!state.selected)return showPicker();
- showAnalysis();$("role").value=defaultRoleForChampion(state.selected);$("goal").value="auto";renderChoiceControls();$("keystone").value="auto";$("secondary").value="auto";
- setLoading(true,`Analysing ${state.selected.name}`,`Loading current champion data, then calculating the strongest Ranked Solo/Duo setup…`,48);await nextPaint();
- state.champDetail=null; state.communityChampion=null;
- if(TEST_MODE)return await analyseSelectedChampion();
+
+ showAnalysis();
+ $("role").value=defaultRoleForChampion(state.selected);
+ $("goal").value="auto";
+ renderChoiceControls();
+ $("keystone").value="auto";
+ $("secondary").value="auto";
+ setLoading(true,`Compiling ${state.selected.name}`,`Loading current Passive + Q/W/E/R mechanics before optimising Ranked Solo/Duo…`,35);
+ await nextPaint();
+
+ state.champDetail=null;
+ state.communityChampion=null;
+ state.championBin=null;
+ state.merakiChampion=null;
+ state.championModel=null;
+ state.modelSummary=null;
+
+ if(TEST_MODE){
+  state.champDetail=fixtureChampionDetail(state.selected);
+  await compileSelectedChampionModel();
+  return await analyseSelectedChampion();
+ }
+
  const riotUrl=state.version?`https://ddragon.leagueoflegends.com/cdn/${state.version}/data/en_US/champion/${state.selected.id}.json`:null;
- const clientKey=state.selected.key;
- const clientUrl=clientKey?`https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champions/${clientKey}.json`:null;
- const [riotDetail,clientDetail]=await Promise.all([riotUrl?optionalJson(riotUrl):Promise.resolve(null),clientUrl?optionalJson(clientUrl):Promise.resolve(null)]);
- state.champDetail=riotDetail?.data?.[state.selected.id]||null;state.communityChampion=clientDetail;
+ const numericKey=state.selected.key;
+ const currentUrl=numericKey?window.PonyChampionEngine.buildCurrentChampionUrl(numericKey):null;
+ const binUrl=window.PonyChampionEngine.buildBinUrl(state.selected.id||state.selected.name);
+ const merakiUrl=window.PonyChampionEngine.buildMerakiUrl(state.selected.id||state.selected.name);
+
+ const [riotDetail,currentDetail,binDetail,merakiDetail]=await Promise.all([
+  riotUrl?optionalJson(riotUrl):Promise.resolve(null),
+  currentUrl?optionalJson(currentUrl):Promise.resolve(null),
+  optionalJson(binUrl),
+  optionalJson(merakiUrl)
+ ]);
+
+ state.champDetail=riotDetail?.data?.[state.selected.id]||null;
+ state.communityChampion=currentDetail;
+ state.championBin=binDetail;
+ state.merakiChampion=merakiDetail;
+
+ if(!state.champDetail){
+  throw new Error(`Could not load current Riot ability data for ${state.selected.name}`);
+ }
+
+ setLoading(true,`Modelling ${state.selected.name}`,`Compiling passive, Q/W/E/R ratios, resets, on-hit rules and objective-specific combos…`,68);
+ await nextPaint();
+ await compileSelectedChampionModel();
  await analyseSelectedChampion();
 }
 function populateFilters(){
